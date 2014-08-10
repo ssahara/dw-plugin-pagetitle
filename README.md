@@ -3,6 +3,7 @@ DokuWiki plugin Page Title
 
 Macro to set the title of the page in metadata.
 
+Maybe useful if the [usehaeding](https://www.dokuwiki.org/config:useheading) option is NOT set 0 in the Configuration Manager.
 
 Syntax
 ------
@@ -12,7 +13,7 @@ Syntax
 
     ~~ShortTitle: short title of the page~~
 
-Each of metadata is stored with key `title` and `shottitle`, respectively.
+Each of metadata is stored with key `title` and `shorttitle`, respectively.
 
 
 
