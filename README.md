@@ -7,13 +7,14 @@ Maybe useful if the [usehaeding](https://www.dokuwiki.org/config:useheading) opt
 
 Syntax
 ------
+Two types of macro: **Title** and **ShortTitle** are supported.
 
 
     ~~Title: title of the page~~ 
 
     ~~ShortTitle: short title of the page~~
 
-Each of metadata is stored with key `title` and `shorttitle`, respectively.
+Each macro overwrites metadata stored with key `title` and `shorttitle`, respectively.
 
 
 
