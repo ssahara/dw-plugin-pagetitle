@@ -1,7 +1,7 @@
 <?php
 /**
  * DokuWiki plugin Pagetitle; Syntax component
- * Macro to set the title of the page
+ * Macro to set the title of the page in metadata
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Satoshi Sahara <sahara.satoshi@gmail.com>
