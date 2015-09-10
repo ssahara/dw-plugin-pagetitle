@@ -38,6 +38,12 @@ class syntax_plugin_pagetitle extends DokuWiki_Syntax_Plugin {
         if ($format == 'metadata') {
              $renderer->meta[$key] = trim($value);
         }
+        elseif ($format == 'xhtml') {
+        	if ($this->getConf('render_title') && $key == 'title' && trim($value) != false) {
+        		$renderer->header(trim($value), 1, 0);
+        	}
+        }
+        
         return true;
     }
 
