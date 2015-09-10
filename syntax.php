@@ -29,15 +29,21 @@ class syntax_plugin_pagetitle extends DokuWiki_Syntax_Plugin {
         return array($state, $match);
     }
 
-    public function render($format, Doku_Renderer $renderer, $data) {
+    public function render($mode, Doku_Renderer $renderer, $data) {
 
        list($state, $match) = $data;
        list($key, $value) = explode(':', substr($match, 2, -2), 2);
        $key = strtolower($key);
 
-        if ($format == 'metadata') {
+        if ($mode == 'metadata') {
              $renderer->meta[$key] = trim($value);
         }
+        elseif ($mode == 'xhtml') {
+        	if ($this->getConf('render_title') && $key == 'title' && trim($value) != false) {
+        		$renderer->header(trim($value), 1, 0);
+        	}
+        }
+        
         return true;
     }
 
