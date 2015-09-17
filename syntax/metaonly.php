@@ -9,94 +9,19 @@
  *
  */
 
-if (!defined('DOKU_INC')) die();
+require_once(dirname(__FILE__).'/decorative.php');
 
-class syntax_plugin_pagetitle_metaonly extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_pagetitle_metaonly extends syntax_plugin_pagetitle_decorative {
 
     protected $entry_pattern = '~~Title:(?=.*?~~)';
     protected $exit_pattern  = '~~';
 
-    protected $pluginMode, $name;
-    protected $store, $capture;
-
-    function __construct() {
-        $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
-        $this->name = substr(get_class($this), 14);
-    }
 
     function getType() { return 'baseonly';}
     function getPType() { return 'normal';}
     function getAllowedTypes() { return array('formatting', 'substition', 'disabled'); }
     function getSort() { return 49; }
 
-    // Connect pattern to lexer
-    function connectTo($mode) {
-        $this->Lexer->addEntryPattern($this->entry_pattern, $mode, $this->pluginMode);
-    }
-    function postConnect() {
-        $this->Lexer->addExitPattern($this->exit_pattern, $this->pluginMode);
-    }
-
-
-    /*
-     * Handle the match
-     */
-    function handle($match, $state, $pos, Doku_Handler $handler) {
-        switch ($state) {
-            case DOKU_LEXER_ENTER :
-                $handler->addPluginCall($this->name,array($state),$state,$pos,$match);
-                return false;
-            case DOKU_LEXER_UNMATCHED :
-                $handler->_addCall('cdata', array($match), $pos);
-                return false;
-            case DOKU_LEXER_EXIT :
-                $handler->addPluginCall($this->name,array($state),$state,$pos,$match);
-                return false;
-        }
-        return false;
-    }
-
-    /**
-     * Create output
-     */
-    function render($format, Doku_Renderer $renderer, $data) {
-        list($state) = $data;
-        switch ($state) {
-            case DOKU_LEXER_ENTER :
-                // preserve variables
-                $this->store = $renderer->doc;
-                $this->capture = $renderer->capture;
-
-                // set doc blank to store parsed "UNMATHCED" content
-                $renderer->doc = '';
-                // metadata renderer should always parse "UNMATCHED" content
-                if ($format == 'metadata') $renderer->capture = true;
-
-                return true;
-                break;
-            case DOKU_LEXER_EXIT :
-                // retrieve parsed "UNMATCHED" content
-                $decorative_title = trim($renderer->doc);
-
-                // restore variable
-                $renderer->doc = $this->store;
-                if ($format == 'metadata') $renderer->capture = $this->capture;
-                break; // do not return here
-            default:
-                return false; // this should never happen
-        }
-
-        // get plain title
-        $title = htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES);
-        if (empty($title)) return false;
-
-        // output title
-        $method = '_' . $format . '_render';
-        if (method_exists($this, $method)) {
-            return $this->$method($decorative_title, $title, $renderer);
-        }
-        else return false;
-    }
 
     /**
      * Revised procedures for renderers
