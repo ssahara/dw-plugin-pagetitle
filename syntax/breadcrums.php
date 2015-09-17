@@ -11,7 +11,7 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_breadcrums extends DokuWiki_Syntax_Plugin {
 
-    protected $special_pattern = '~~(?:ShortTitle|Title):.*?~~';
+    protected $special_pattern = '~~ShortTitle:.*?~~';
 
     public function getType() { return 'substition'; }
     public function getPType(){ return 'normal'; }
