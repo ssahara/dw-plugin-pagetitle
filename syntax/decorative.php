@@ -12,8 +12,8 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
-    protected $entry_pattern = '~~TITLE:(?=.*?~~)';
-    protected $exit_pattern  = '~~';
+    protected $entry_pattern = '<title>(?=.*?</title>)';
+    protected $exit_pattern  = '</title>';
 
     protected $pluginMode, $name;
     protected $store, $capture;
