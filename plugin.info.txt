@@ -2,6 +2,6 @@ base  pagetitle
 name  Page title plugin
 author Satoshi Sahara
 email  sahara.satoshi@gmail.com
-date   2014-08-10
+date   2015-09-17
 desc   Macro to set the title of the page in metadata.
 url    https://www.dokuwiki.org/plugin:pagetitle
