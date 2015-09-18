@@ -1,5 +1,5 @@
-DokuWiki plugin Page Title
-====================================
+Page Title plugin for DokuWiki
+==============================
 
 Macro to set the title of the page in metadata.
 
@@ -22,6 +22,6 @@ Each macro overwrites metadata stored with key `title` and `shorttitle`, respect
 Licensed under the GNU Public License (GPL) version 2
 
 More infomation is available:
-  * http://www.dokuwiki.org/plugin:pagetitle
+  * https://www.dokuwiki.org/plugin:pagetitle
 
-(c) 2014 Satoshi Sahara \<sahara.satoshi@gmail.com>
+(c) 2014-2015 Satoshi Sahara \<sahara.satoshi@gmail.com>
