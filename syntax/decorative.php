@@ -1,11 +1,18 @@
 <?php
 /**
  * DokuWiki plugin Pagetitle Decorative; Syntax component
- * Show page title decorative, with setting plain title in metadata of the page
+ * Show decorative title on the page, with setting plain title in metadata
  * 
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Sahara Satoshi <sahara.satoshi@gmail.com>
  *
+ * The title text can contain wiki formatting markups such as bold,
+ * itlic, subscript and superscript, but title metadata remains simple
+ * plain text without any markup.
+ *   example
+ *        wiki source:    <title> H<sub>s</sub>O </title>
+ *        page (html):    <h1>H<sub>2</sub></h1>
+ *        title metadata: H2O
  */
 
 if (!defined('DOKU_INC')) die();
@@ -100,7 +107,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     /**
      * Revised procedures for renderers
      */
-    protected function _xhtml_render($decorative_title, $title, &$renderer) {
+    protected function _xhtml_render($decorative_title, $title, $renderer) {
         // even title in <h1>, it never shown up in the table of contents (TOC)
         $renderer->doc .= '<h1 class="pagetitle">';
         $renderer->doc .= $decorative_title;
@@ -108,7 +115,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         return true;
     }
 
-    protected function _metadata_render($decorative_title, $title, &$renderer) {
+    protected function _metadata_render($decorative_title, $title, $renderer) {
         $renderer->meta['title'] = $title;
         return true;
     }
