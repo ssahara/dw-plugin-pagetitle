@@ -26,11 +26,11 @@ class syntax_plugin_pagetitle_metaonly extends syntax_plugin_pagetitle_decorativ
     /**
      * Revised procedures for renderers
      */
-    protected function _xhtml_render($decorative_title, $title, &$renderer) {
+    protected function _xhtml_render($decorative_title, $title, $renderer) {
         return true;
     }
 
-    protected function _metadata_render($decorative_title, $title, &$renderer) {
+    protected function _metadata_render($decorative_title, $title, $renderer) {
         $renderer->meta['title'] = $title;
         return true;
     }
