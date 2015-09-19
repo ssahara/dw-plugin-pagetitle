@@ -1,22 +1,25 @@
 Page Title plugin for DokuWiki
 ==============================
 
-Macro to set the title of the page in metadata.
+Define a title of the wiki page.
 
-Maybe useful if the [usehaeding](https://www.dokuwiki.org/config:useheading) option is NOT set 0 in the Configuration Manager.
+```
+  <title>
+  **Page Title** plugin for DokuWiki
+  </title>
+```
 
-Syntax
-------
-Two types of macro: **Title** and **ShortTitle** are supported.
+The specified page title becomes the title of HTML document in combination with your DokuWiki site [title](https://www.dokuwiki.org/config:title).
+You may need to set [usehaeding](https://www.dokuwiki.org/config:useheading) option 
+to "navigation" (other than "0") in order to show specified title in the browser title bar.
 
+You can use **bold**, *italic*, <sup>superscript</sup> and <sub>subscript</sub> text to show appropriate title on the page, for instance a chemical formula [Fe<sup>II</sup>(CN)<sub>6</sub>]<sup>4-</sup>. The formatted page title is shown on the page, but it is converted to a plain text for the title of HTML document, like `FeII(CN)6]4-`. The pagetitle plugin overwrites 'title' value of the [metadata storage](https://www.dokuwiki.org/devel:metadata) to store the plain title text.
 
-    ~~Title: title of the page~~ 
+If you want to set a page title without showing itself on the page, you can instead use following syntax macro:
 
-    ~~ShortTitle: short title of the page~~
-
-Each macro overwrites metadata stored with key `title` and `shorttitle`, respectively.
-
-
+```
+  ~~Title: **Page Title** plugin for DokuWiki ~~
+```
 
 ----
 Licensed under the GNU Public License (GPL) version 2
