@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki plugin Pagetitle metaonly; Syntax component
+ * DokuWiki plugin PageTitle metaonly; Syntax component
  * Macro to set the itle of the page in metadata
  * deteriorated decorative syntax component
  * 

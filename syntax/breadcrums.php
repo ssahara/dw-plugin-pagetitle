@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki plugin Pagetitle Breadcrums; Syntax component
+ * DokuWiki plugin PageTitle Breadcrums; Syntax component
  * Macro to set the short title of the page in metadata
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)

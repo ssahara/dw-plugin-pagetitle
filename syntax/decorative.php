@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki plugin Pagetitle Decorative; Syntax component
+ * DokuWiki plugin PageTitle Decorative; Syntax component
  * Show decorative title on the page, with setting plain title in metadata
  * 
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html

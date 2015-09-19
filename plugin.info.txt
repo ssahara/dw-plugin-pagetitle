@@ -3,5 +3,5 @@ name  Page Title plugin
 author Satoshi Sahara
 email  sahara.satoshi@gmail.com
 date   2015-09-18
-desc   Show decorative title on the page with setting plain title in metadata
+desc   Define a title of the wiki page. This plugin allows to write decorative title on the page with setting plain title text in metadata storage.
 url    https://www.dokuwiki.org/plugin:pagetitle
