@@ -13,14 +13,16 @@ class syntax_plugin_pagetitle_breadcrums extends DokuWiki_Syntax_Plugin {
 
     protected $special_pattern = '~~ShortTitle:.*?~~';
 
+    function __construct() {
+        $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
+    }
+
     public function getType() { return 'substition'; }
     public function getPType(){ return 'normal'; }
     public function getSort() { return 990; }
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern($this->special_pattern, $mode,
-            implode('_', array('plugin',$this->getPluginName(),))
-        );
+        $this->Lexer->addSpecialPattern($this->special_pattern, $mode, $this->pluginMode);
     }
 
     public function handle($match, $state, $pos, Doku_Handler $handler) {
