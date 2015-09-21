@@ -9,7 +9,7 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_breadcrums extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
     protected $special_pattern = '~~ShortTitle:.*?~~';
 
