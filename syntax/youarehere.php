@@ -35,8 +35,9 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         list($state, $match) = $data;
         $renderer->doc .= DOKU_LF.'<!-- YOU_ARE_HERE -->'.DOKU_LF;
         //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
+        $renderer->doc .= '<div class="youarehere">';
         $renderer->doc .= $this->tpl_youarehere();
-        $renderer->doc .= DOKU_LF;
+        $renderer->doc .= '</div>'.DOKU_LF;
         return true;
     }
 
@@ -50,29 +51,33 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     function tpl_youarehere($print = false) {
         global $conf, $ID, $lang;
 
-        $page = ':'.$ID;
+        $page = ':'.((noNS($ID) == $conf['start']) ? getNS($ID) : $ID);
+
         $parts = explode(':', $page);
         $depth = count($parts) -1;
 
-        $out = '<div class="youarehere">';
-        //$out.= '<span class="bchead">#'.$lang['youarehere'].' </span>';
+        $out = '';
+        //$out.= '<span class="bchead">'.$lang['youarehere'].' </span>';
 
         $ns = '';
         for ($i = 1; $i < count($parts); $i++) {
-            $ns .= $parts[$i].':';
-            $page = $ns;
-            resolve_pageid('', $page, $exists);
-            //$name = p_get_metadata($page, 'shorttitle') ?: $parts[$i];
-            //$out.= $this->pagelink($page, $name);
-            $out.= $this->pagelink($page);
+            $ns.= $parts[$i];
+            $id = $ns;
+            resolve_pageid('', $id, $exists);
+            if (!$exists) {
+                $id = $ns.':';
+                resolve_pageid('', $id, $exists);
+            }
+            $page = $id;
+            $name = p_get_metadata($page, 'shorttitle') ?: $parts[$i];
+            $out.= '<bdi>'.$this->pagelink($page, $name, $exists).'</bdi>';
             if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
+            $ns.= ':';
         }
 
-        $out .= '</div>';
         if ($print) {
-            echo $out;
-            return (bool) $out;
-        } 
+            echo $out; return (bool) $out;
+        }
         return $out;
     }
 
@@ -81,34 +86,27 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
      *
      * @param string      $id   page id
      * @param string|null $name the name of the link
+     * @param bool        $exists
      * @param bool        $print
      * @return bool|string html, or false if no data, true if printed
      */
-    protected function pagelink($id, $name = null, $print = false) {
+    protected function pagelink($id, $name = null, $exists, $print = false) {
         global $conf;
 
         $title = p_get_metadata($id, 'title');
         if (empty($title)) $title = $id;
 
+        $class = ($exists)? 'wikilink1' : 'wikilink2';
+
+        $short_title = $name;
         if (empty($name)) {
-            $short_title = p_get_metadata($id, 'shorttitle');
-            if (empty($short_title)) {
-               if (noNS($id) == $conf['start']) {
-                   $short_title = p_get_metadata(getNS($id), 'shorttitle');
-                   if (empty($short_title)) $short_title = noNS(getNS($id));
-               } else {
-                   $short_title = noNS($id);
-               }
-            }
-        } else {
-            $short_title = $name;
+            $short_title = p_get_metadata($id, 'shorttitle') ?: noNS($id);
         }
 
-        $out = '<a href="'.wl($id).'" title="'.hsc($title).'">'.hsc($short_title).'</a>';
-        $out = '<bdi>'.$out.'</bdi>';
+        $out = '<a href="'.wl($id).'" class="'.$class.'" title="'.hsc($title).'">';
+        $out.= hsc($short_title).'</a>';
         if ($print) {
-            echo $out;
-            return (bool) $out;
+            echo $out; return (bool) $out;
         } 
         return $out;
     }
