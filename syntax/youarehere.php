@@ -35,7 +35,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         list($state, $match) = $data;
         $renderer->doc .= DOKU_LF.'<!-- YOU_ARE_HERE -->'.DOKU_LF;
         //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
-        $renderer->doc .= $this->tpl_youarehere(' ›&#x00A0;');
+        $renderer->doc .= $this->tpl_youarehere();
         $renderer->doc .= DOKU_LF;
         return true;
     }
@@ -43,10 +43,11 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     /**
      * Hierarchical breadcrumbs for PageTitle plugin
      * the startpage does not always printed
-     * @param string $sep Separator between entries
-     * @return bool
+     *
+     * @param bool        $print
+     * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($sep = ' » ') {
+    function tpl_youarehere($print = false) {
         global $conf, $ID, $lang;
 
         $page = ':'.$ID;
@@ -57,32 +58,59 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         //$out.= '<span class="bchead">#'.$lang['youarehere'].' </span>';
 
         $ns = '';
-        $page = '';
         for ($i = 1; $i < count($parts); $i++) {
             $ns .= $parts[$i].':';
             $page = $ns;
             resolve_pageid('', $page, $exists);
-            $out.= $this->pagelink($page, $parts[$i]);
-            if ($i < $depth) $out.= $sep;
+            //$name = p_get_metadata($page, 'shorttitle') ?: $parts[$i];
+            //$out.= $this->pagelink($page, $name);
+            $out.= $this->pagelink($page);
+            if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
         }
 
         $out .= '</div>';
+        if ($print) {
+            echo $out;
+            return (bool) $out;
+        } 
         return $out;
     }
 
-    protected function pagelink($id, $name = null) {
+    /**
+     * Prints a link to a WikiPage
+     *
+     * @param string      $id   page id
+     * @param string|null $name the name of the link
+     * @param bool        $print
+     * @return bool|string html, or false if no data, true if printed
+     */
+    protected function pagelink($id, $name = null, $print = false) {
+        global $conf;
 
-        $href = wl($id);
         $title = p_get_metadata($id, 'title');
-        if (empty($title)) $title = $href;
-        $short_title = p_get_metadata($id, 'shorttitle');
-        if (empty($short_title)) $short_title = $name;
-        if (empty($short_title)) $short_title = $id;
+        if (empty($title)) $title = $id;
 
-        $out = '<a href="'.$href.'" title="'.hsc($title).'">'.hsc($short_title).'</a>';
+        if (empty($name)) {
+            $short_title = p_get_metadata($id, 'shorttitle');
+            if (empty($short_title)) {
+               if (noNS($id) == $conf['start']) {
+                   $short_title = p_get_metadata(getNS($id), 'shorttitle');
+                   if (empty($short_title)) $short_title = noNS(getNS($id));
+               } else {
+                   $short_title = noNS($id);
+               }
+            }
+        } else {
+            $short_title = $name;
+        }
+
+        $out = '<a href="'.wl($id).'" title="'.hsc($title).'">'.hsc($short_title).'</a>';
         $out = '<bdi>'.$out.'</bdi>';
+        if ($print) {
+            echo $out;
+            return (bool) $out;
+        } 
         return $out;
     }
-
 
 }
