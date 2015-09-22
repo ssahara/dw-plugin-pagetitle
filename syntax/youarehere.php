@@ -11,7 +11,7 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
-    protected $special_pattern = '~~(?:YouAreHere|YOU_ARE_HERE)~~';
+    protected $special_pattern = '<!-- ?YOU_ARE_HERE ?-->';
     protected $pluginMode;
 
     function __construct() {
@@ -33,7 +33,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     public function render($format, Doku_Renderer $renderer, $data) {
         global $INFO;
         list($state, $match) = $data;
-        $renderer->doc .= DOKU_LF.'<!-- YOU_ARE_HERE -->'.DOKU_LF;
+        $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
         //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
         $renderer->doc .= '<div class="youarehere">';
         $renderer->doc .= $this->tpl_youarehere(0);
@@ -56,7 +56,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $depth = count($parts) -1;
 
         $out = '';
-        //$out.= '<span class="bchead">'.$lang['youarehere'].' </span>';
+        //$out = '<span class="bchead">'.$lang['youarehere'].' </span>';
 
         $ns = '';
         for ($i = 1; $i < count($parts); $i++) {
