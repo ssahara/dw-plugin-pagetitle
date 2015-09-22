@@ -36,7 +36,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= DOKU_LF.'<!-- YOU_ARE_HERE -->'.DOKU_LF;
         //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
         $renderer->doc .= '<div class="youarehere">';
-        $renderer->doc .= $this->tpl_youarehere();
+        $renderer->doc .= $this->tpl_youarehere(0);
         $renderer->doc .= '</div>'.DOKU_LF;
         return true;
     }
@@ -48,7 +48,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
      * @param bool        $print
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($print = false) {
+    function tpl_youarehere($print = true) {
         global $conf, $ID, $lang;
 
         $page = ':'.((noNS($ID) == $conf['start']) ? getNS($ID) : $ID);
@@ -70,7 +70,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
             }
             $page = $id;
             $name = p_get_metadata($page, 'shorttitle') ?: $parts[$i];
-            $out.= '<bdi>'.$this->pagelink($page, $name, $exists).'</bdi>';
+            $out.= '<bdi>'.$this->tpl_pagelink(0, $page, $name, $exists).'</bdi>';
             if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
             $ns.= ':';
         }
@@ -84,19 +84,23 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     /**
      * Prints a link to a WikiPage
      *
+     * @param bool        $print
      * @param string      $id   page id
      * @param string|null $name the name of the link
      * @param bool        $exists
-     * @param bool        $print
      * @return bool|string html, or false if no data, true if printed
      */
-    protected function pagelink($id, $name = null, $exists, $print = false) {
+    protected function tpl_pagelink($print = true, $id, $name = null, $exists = null) {
         global $conf;
 
         $title = p_get_metadata($id, 'title');
         if (empty($title)) $title = $id;
 
-        $class = ($exists)? 'wikilink1' : 'wikilink2';
+        if (is_null($exists)) {
+            $class = (page_exists($id)) ? 'wikilink1' : 'wikilink2';
+        } else {
+            $class = ($exists) ? 'wikilink1' : 'wikilink2';
+        }
 
         $short_title = $name;
         if (empty($name)) {
@@ -109,6 +113,78 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
             echo $out; return (bool) $out;
         } 
         return $out;
+    }
+
+
+    /**
+     * Prints or returns the title of the given page (current one if none given)
+     * modified from DokuWiki original function tpl_pagetitle() 
+     * defined in inc/template.php
+     * This variant function returns title from metadata, ignoring $conf['useheading']
+     *
+     * @param bool   $print if false return content
+     * @param string $id page id
+     * @return bool|string
+     */
+    function tpl_pagetitle($print = true, $id = null) {
+        global $ACT, $ID, $conf, $lang;
+
+        if (is_null($id)) {
+            $title = (p_get_metadata($ID, 'title')) ?: $ID;
+        } else {
+            $title = (p_get_metadata($id, 'title')) ?: $id;
+        }
+
+        // default page title is the page name, modify with the current action
+        switch ($ACT) {
+            // admin functions
+            case 'admin' :
+                $page_title = $lang['btn_admin'];
+                // try to get the plugin name
+                /** @var $plugin DokuWiki_Admin_Plugin */
+                if ($plugin = plugin_getRequestAdminPlugin()){
+                    $plugin_title = $plugin->getMenuText($conf['lang']);
+                    $page_title = $plugin_title ? $plugin_title : $plugin->getPluginName();
+                }
+                break;
+
+            // user functions
+            case 'login' :
+            case 'profile' :
+            case 'register' :
+            case 'resendpwd' :
+                $page_title = $lang['btn_'.$ACT];
+                break;
+
+            // wiki functions
+            case 'search' :
+            case 'index' :
+                $page_title = $lang['btn_'.$ACT];
+                break;
+
+            // page functions
+            case 'edit' :
+                $page_title = "✎ ".$title;
+                break;
+
+            case 'revisions' :
+                $page_title = $title . ' - ' . $lang['btn_revs'];
+                break;
+
+            case 'backlink' :
+            case 'recent' :
+            case 'subscribe' :
+                $page_title = $title . ' - ' . $lang['btn_'.$ACT];
+                break;
+
+            default : // SHOW and anything else not included
+                $page_title = $title;
+        }
+
+        if ($print) {
+            echo hsc($page_title); return (bool) $page_title;
+        } 
+        return hsc($page_title);
     }
 
 }
