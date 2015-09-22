@@ -43,9 +43,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
     /**
      * Hierarchical breadcrumbs for PageTitle plugin
-     * the startpage does not always printed
      *
-     * @param bool        $print
+     * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
     function tpl_youarehere($print = true) {
@@ -68,9 +67,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
                 $id = $ns.':';
                 resolve_pageid('', $id, $exists);
             }
-            $page = $id;
-            $name = p_get_metadata($page, 'shorttitle') ?: $parts[$i];
-            $out.= '<bdi>'.$this->tpl_pagelink(0, $page, $name, $exists).'</bdi>';
+            $name = p_get_metadata($id, 'shorttitle') ?: $parts[$i];
+            $out.= '<bdi>'.$this->tpl_pagelink(0, $id, $name, $exists).'</bdi>';
             if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
             $ns.= ':';
         }
@@ -84,10 +82,10 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     /**
      * Prints a link to a WikiPage
      *
-     * @param bool        $print
-     * @param string      $id   page id
-     * @param string|null $name the name of the link
-     * @param bool        $exists
+     * @param bool   $print if false return content
+     * @param string $id    page id
+     * @param string $name  the name of the link
+     * @param bool   $exists
      * @return bool|string html, or false if no data, true if printed
      */
     protected function tpl_pagelink($print = true, $id, $name = null, $exists = null) {
@@ -123,8 +121,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
      * This variant function returns title from metadata, ignoring $conf['useheading']
      *
      * @param bool   $print if false return content
-     * @param string $id page id
-     * @return bool|string
+     * @param string $id    page id
+     * @return bool|string html, or false if no data, true if printed
      */
     function tpl_pagetitle($print = true, $id = null) {
         global $ACT, $ID, $conf, $lang;
