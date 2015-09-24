@@ -1,7 +1,10 @@
 Page Title plugin for DokuWiki
 ==============================
 
-Define a title of the wiki page.
+Render title on the page
+------------------------
+
+Define and render a title of the wiki page.
 
 ```
   <title>
@@ -20,6 +23,18 @@ If you want to set a page title without showing itself on the page, you can inst
 ```
   ~~Title: **Page Title** plugin for DokuWiki ~~
 ```
+
+
+Hierarchical breadcrumbs on the page
+----------------------------------
+(expermental)
+
+```
+<!--YOU_ARE_HERE-->
+```
+
+This syntax allow you to put a hierarchical breadcrumbs in the page. The place holder `<!--YOU_ARE_HERE-->` is replaced by the hierarchical breadcrumbs provided by this plugin,  which uses page id for a breadcrumbs name independently from [$conf('useheading')](https://www.dokuwiki.org/config:useheading) setting.
+
 
 ----
 Licensed under the GNU Public License (GPL) version 2
