@@ -1,28 +1,28 @@
 <?php
 /**
- * DokuWiki plugin Pagetitle; Syntax component
- * Macro to set the title of the page in metadata
+ * DokuWiki plugin PageTitle Breadcrums; Syntax component
+ * Macro to set the short title of the page in metadata
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Satoshi Sahara <sahara.satoshi@gmail.com>
  */
 
 if (!defined('DOKU_INC')) die();
-if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'syntax.php');
 
-class syntax_plugin_pagetitle extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
-    protected $special_pattern = '~~(?:Title|ShortTitle):.*?~~';
+    protected $special_pattern = '~~ShortTitle:.*?~~';
+
+    function __construct() {
+        $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
+    }
 
     public function getType() { return 'substition'; }
-    public function getPType(){ return 'block'; }
+    public function getPType(){ return 'normal'; }
     public function getSort() { return 990; }
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern($this->special_pattern, $mode,
-            implode('_', array('plugin',$this->getPluginName(),))
-        );
+        $this->Lexer->addSpecialPattern($this->special_pattern, $mode, $this->pluginMode);
     }
 
     public function handle($match, $state, $pos, Doku_Handler $handler) {
@@ -42,4 +42,3 @@ class syntax_plugin_pagetitle extends DokuWiki_Syntax_Plugin {
     }
 
 }
-

@@ -1,0 +1,9 @@
+# deleted.files : Page Title plugin for DokuWiki
+#
+# This file contains a list of files that were present in previous
+# plugin releases but were removed later. 
+# An up-to-date plugin should not have any of the files installed.
+
+# Since 2015-09-17
+syntax.php
+
