@@ -13,7 +13,7 @@ Define and render a title of the wiki page.
 ```
 
 The specified page title becomes the title of HTML document in combination with your DokuWiki site [title](https://www.dokuwiki.org/config:title).
-You may need to set [usehaeding](https://www.dokuwiki.org/config:useheading) option 
+You may need to set [useheading](https://www.dokuwiki.org/config:useheading) option 
 to "navigation" (other than "0") in order to show specified title in the browser title bar.
 
 You can use **bold**, *italic*, <sup>superscript</sup> and <sub>subscript</sub> text to show appropriate title on the page, for instance a chemical formula [Fe<sup>II</sup>(CN)<sub>6</sub>]<sup>4-</sup>. The formatted page title is shown on the page, but it is converted to a plain text for the title of HTML document, like `FeII(CN)6]4-`. The pagetitle plugin overwrites 'title' value of the [metadata storage](https://www.dokuwiki.org/devel:metadata) to store the plain title text.
