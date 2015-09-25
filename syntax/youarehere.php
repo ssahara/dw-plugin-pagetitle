@@ -81,6 +81,10 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
     /**
      * Prints a link to a WikiPage
+     * a customised function based on 
+     *   tpl_pagelink() defined in inc/template.php,
+     *   html_wikilink() defined in inc/html.php, 
+     *   internallink() defined in inc/parser/xhtml.php
      *
      * @param bool   $print if false return content
      * @param string $id    page id
@@ -105,12 +109,41 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
             $short_title = p_get_metadata($id, 'shorttitle') ?: noNS($id);
         }
 
-        $out = '<a href="'.wl($id).'" class="'.$class.'" title="'.hsc($title).'">';
+        $out = '<a href="'.$this->wl($id).'" class="'.$class.'" title="'.hsc($title).'">';
         $out.= hsc($short_title).'</a>';
         if ($print) {
             echo $out; return (bool) $out;
         } 
         return $out;
+    }
+
+
+    /**
+     * builds url of a wikipage
+     * a simplified function of DokuWiki wl() defined inc/common.php
+     *
+     * @param string   $id  page id
+     * @return string
+     */
+    function wl($id=null) {
+        global $conf;
+
+        if (noNS($id) == $conf['start']) $id = ltrim(getNS($id).':', ':');
+        idfilter($id);
+
+        $xlink = DOKU_BASE;
+
+        switch ($conf['userewrite']) {
+            case 2: // eg. DOKU_BASE/doku.php/wiki:syntax
+                $xlink .= DOKU_SCRIPT.'/'.$id;
+            case 1: // eg. DOKU_BASE/wiki:syntax
+                $xlink .= $id;
+                break;
+            default:
+                $xlink .= DOKU_SCRIPT;
+                $xlink .= ($id) ? '?id='.$id : '';
+        }
+        return rtrim($xlink,'/');
     }
 
 
