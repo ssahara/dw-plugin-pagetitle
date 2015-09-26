@@ -1,0 +1,14 @@
+/*
+ * DokuWiki plugin PageTitle
+ */
+
+/* Hierarchical breadcrumbs in pages */
+#dokuwiki__content div.youarehere:empty {
+  display: none;
+}
+#dokuwiki__content .youarehere {
+  font-size: 85%;
+}
+#dokuwiki__content .youarehere:before {
+  content:"⌇";
+}
