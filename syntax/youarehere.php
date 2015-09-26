@@ -36,7 +36,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
         //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
         $renderer->doc .= '<div class="youarehere">';
-        $renderer->doc .= $this->tpl_youarehere(0);
+        $renderer->doc .= $this->tpl_youarehere(0, 1);
         $renderer->doc .= '</div>'.DOKU_LF;
         return true;
     }
@@ -45,12 +45,19 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
      * Hierarchical breadcrumbs for PageTitle plugin
      *
      * @param bool   $print if false return content
+     * @param int    $start_depth of hierarchical breadcrumbs
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($print = true) {
+    function tpl_youarehere($print = true, $start_depth = 0) {
         global $conf, $ID, $lang;
 
-        $page = ':'.((noNS($ID) == $conf['start']) ? getNS($ID) : $ID);
+        if ($ID == $conf['start']) {
+            $page = '';
+        } elseif (noNS($ID) == $conf['start']) {
+            $page = ':'.getNS($ID);  // drop tailing start
+        } else {
+            $page = ':'.$ID;
+        }
 
         $parts = explode(':', $page);
         $depth = count($parts) -1;
@@ -59,9 +66,9 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         //$out = '<span class="bchead">'.$lang['youarehere'].' </span>';
 
         $ns = '';
-        for ($i = 1; $i < count($parts); $i++) {
+        for ($i = $start_depth; $i < count($parts); $i++) {
             $ns.= $parts[$i];
-            $id = $ns;
+            $id = $ns ?: $conf['start'];
             resolve_pageid('', $id, $exists);
             if (!$exists) {
                 $id = $ns.':';
