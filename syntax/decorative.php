@@ -11,7 +11,7 @@
  * plain text without any markup.
  *   example
  *        wiki source:    <title> H<sub>s</sub>O </title>
- *        page (html):    <h1>H<sub>2</sub></h1>
+ *        page (html):    <h1 class="pagetitle">H<sub>2</sub>O</h1>
  *        title metadata: H2O
  */
 
