@@ -13,11 +13,20 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
     /**
      * Hierarchical breadcrumbs for PageTitle plugin
      *
-     * @param bool   $print if false return content
      * @param int    $start_depth of hierarchical breadcrumbs
+     * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($print = true, $start_depth = 0) {
+    function tpl_youarehere($start_depth = 0, $print = true) {
+
+        $out = $this->html_youarehere($start_depth);
+        if ($print) {
+            echo $out; return (bool) $out;
+        }
+        return $out;
+    }
+
+    function html_youarehere($start_depth = 0) {
         global $conf, $ID, $lang;
 
         if ($ID == $conf['start']) {
@@ -44,16 +53,13 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
                 resolve_pageid('', $id, $exists);
             }
             $name = p_get_metadata($id, 'shorttitle') ?: $parts[$i];
-            $out.= '<bdi>'.$this->tpl_pagelink(0, $id, $name, $exists).'</bdi>';
+            $out.= '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
             if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
             $ns.= ':';
         }
-
-        if ($print) {
-            echo $out; return (bool) $out;
-        }
         return $out;
     }
+
 
     /**
      * Prints a link to a WikiPage
@@ -62,14 +68,26 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
      *   html_wikilink() defined in inc/html.php, 
      *   internallink() defined in inc/parser/xhtml.php
      *
-     * @param bool   $print if false return content
      * @param string $id    page id
      * @param string $name  the name of the link
      * @param bool   $exists
+     * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    protected function tpl_pagelink($print = true, $id, $name = null, $exists = null) {
+    function tpl_pagelink($id = null, $name = null, $exists = null, $print = true) {
         global $conf;
+
+        $out = $this->html_pagelink($id, $name, $exists);
+        if ($print) {
+            echo $out; return (bool) $out;
+        } 
+        return $out;
+    }
+
+    function html_pagelink($id = null, $name = null, $exists = null) {
+        global $conf, $ID;
+
+        if (is_null($id)) $id = $ID;
 
         $title = p_get_metadata($id, 'title');
         if (empty($title)) $title = $id;
@@ -87,9 +105,6 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
 
         $out = '<a href="'.$this->wl($id).'" class="'.$class.'" title="'.hsc($title).'">';
         $out.= hsc($short_title).'</a>';
-        if ($print) {
-            echo $out; return (bool) $out;
-        } 
         return $out;
     }
 
@@ -101,7 +116,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
      * @param string   $id  page id
      * @return string
      */
-    function wl($id=null) {
+    function wl($id = null) {
         global $conf;
 
         if (noNS($id) == $conf['start']) $id = ltrim(getNS($id).':', ':');
@@ -129,11 +144,20 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
      * defined in inc/template.php
      * This variant function returns title from metadata, ignoring $conf['useheading']
      *
-     * @param bool   $print if false return content
      * @param string $id    page id
+     * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagetitle($print = true, $id = null) {
+    function tpl_pagetitle($id = null, $print = true) {
+
+        $out = $this->pagetitle($id);
+        if ($print) {
+            echo $out; return (bool) $out;
+        } 
+        return $out;
+    }
+
+    function pagetitle($id = null) {
         global $ACT, $ID, $conf, $lang;
 
         if (is_null($id)) {
@@ -187,11 +211,6 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
             default : // SHOW and anything else not included
                 $page_title = $title;
         }
-
-        if ($print) {
-            echo hsc($page_title); return (bool) $page_title;
-        } 
         return hsc($page_title);
     }
-
 }

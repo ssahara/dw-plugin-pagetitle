@@ -31,14 +31,13 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     }
 
     public function render($format, Doku_Renderer $renderer, $data) {
-        global $INFO;
+
         list($state, $match) = $data;
         $template = plugin_load('helper','pagetitle');
 
         $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
-        //$renderer->doc .= '<span id="pagetitle">%'.$INFO['meta']['shorttitle'].'</span>';
         $renderer->doc .= '<div class="youarehere">';
-        $renderer->doc .= $template->tpl_youarehere(0, 1);
+        $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
         $renderer->doc .= '</div>'.DOKU_LF;
         return true;
     }
