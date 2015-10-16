@@ -24,6 +24,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
     protected $pluginMode, $name;
     protected $store, $capture;
+    protected $check = array(); // ensure first title only effective, used in render()
 
     function __construct() {
         $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
@@ -97,6 +98,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         if (empty($title)) return false;
 
         // output title
+        if ($this->check[$format]++) return false; // effective first <title> block only
         $method = '_' . $format . '_render';
         if (method_exists($this, $method)) {
             return $this->$method($decorative_title, $title, $renderer);
