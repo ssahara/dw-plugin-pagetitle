@@ -129,12 +129,13 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
                 $xlink .= DOKU_SCRIPT.'/'.$id;
             case 1: // eg. DOKU_BASE/wiki:syntax
                 $xlink .= $id;
+                $xlink = ($xlink == '/') ? '/' : rtrim($xlink,'/');
                 break;
             default:
                 $xlink .= DOKU_SCRIPT;
                 $xlink .= ($id) ? '?id='.$id : '';
         }
-        return rtrim($xlink,'/');
+        return $xlink;
     }
 
 
