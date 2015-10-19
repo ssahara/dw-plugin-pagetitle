@@ -12,6 +12,7 @@ if (!defined('DOKU_INC')) die();
 class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
     protected $special_pattern = '~~ShortTitle:.*?~~';
+    protected $check = array(); // ensure first matched pattern only effective
 
     function __construct() {
         $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
@@ -31,9 +32,10 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
     public function render($format, Doku_Renderer $renderer, $data) {
 
-       list($state, $match) = $data;
-       list($key, $value) = explode(':', substr($match, 2, -2), 2);
-       $key = strtolower($key);
+        if ($this->check[$format]++) return false;
+        list($state, $match) = $data;
+        list($key, $value) = explode(':', substr($match, 2, -2), 2);
+        $key = strtolower($key);
 
         if ($format == 'metadata') {
              $renderer->meta[$key] = trim($value);
