@@ -170,11 +170,13 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
         // default page title is the page name, modify with the current action
         switch ($ACT) {
             // admin functions
+            case 'adminhomepage' :
             case 'admin' :
                 $page_title = $lang['btn_admin'];
                 // try to get the plugin name
                 /** @var $plugin DokuWiki_Admin_Plugin */
-                if ($plugin = plugin_getRequestAdminPlugin()){
+                if ((function_exists('plugin_getRequestAdminPlugin') &&
+                    ($plugin = plugin_getRequestAdminPlugin()) ) {
                     $plugin_title = $plugin->getMenuText($conf['lang']);
                     $page_title = $plugin_title ? $plugin_title : $plugin->getPluginName();
                 }
