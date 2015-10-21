@@ -49,24 +49,15 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      * Handle the match
      */
     function handle($match, $state, $pos, Doku_Handler $handler) {
-        global $ID;
-
-        if ($this->check[$ID] > 0) {
-            return false; // ignore match after once handled
-        }
-
         switch ($state) {
             case DOKU_LEXER_ENTER :
-                $data = array($state, $ID);
-                $handler->addPluginCall($this->name, $data, $state,$pos,$match);
+                $handler->addPluginCall($this->name,array($state),$state,$pos,$match);
                 return false;
             case DOKU_LEXER_UNMATCHED :
                 $handler->_addCall('cdata', array($match), $pos);
                 return false;
             case DOKU_LEXER_EXIT :
-                $data = array($state, $ID);
-                $handler->addPluginCall($this->name, $data, $state,$pos,$match);
-                $this->check[$ID]++;
+                $handler->addPluginCall($this->name,array($state),$state,$pos,$match);
                 return false;
         }
         return false;
@@ -76,7 +67,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      * Create output
      */
     function render($format, Doku_Renderer $renderer, $data) {
-        list($state, $id) = $data;
+        list($state) = $data;
         switch ($state) {
             case DOKU_LEXER_ENTER :
                 // preserve variables
@@ -101,13 +92,13 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
             default:
                 return false; // this should never happen
         }
-        if (strcmp($id, $ID) !== 0) return false;
 
         // get plain title
         $title = htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES);
         if (empty($title)) return false;
 
         // output title
+        if ($this->check[$format]++) return false; // effective first <title> block only
         $method = '_' . $format . '_render';
         if (method_exists($this, $method)) {
             return $this->$method($decorative_title, $title, $renderer);

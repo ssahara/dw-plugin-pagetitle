@@ -30,7 +30,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         if ($this->check[$ID]++) {
-            return false; // ignore match after once handled
+            return false; // ignroe second match in a page
         }
 
         list($key, $value) = explode(':', substr($match, 2, -2), 2);
@@ -42,15 +42,12 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         list($state, $short_title, $id) = $data;
-        if (strcmp($id, $ID) !== 0) return false;
 
-        switch ($format) {
-            case 'metadata':
-                $renderer->meta['shorttitle'] = $short_title;
-                return true;
-            default:
-                return false;
+        if ($format == 'metadata') {
+             if (strcmp($id, $ID) !== 0) return false;
+             $renderer->meta['shorttitle'] = $short_title;
         }
+        return true;
     }
 
 }
