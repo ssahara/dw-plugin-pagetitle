@@ -27,18 +27,25 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     }
 
     public function handle($match, $state, $pos, Doku_Handler $handler) {
-        return array($state, $match);
+        global $ID;
+
+        if ($this->check[$ID]++) {
+            return false; // ignroe second match in a page
+        }
+
+        list($key, $value) = explode(':', substr($match, 2, -2), 2);
+        $short_title = trim($value);
+        return array($state, $short_title, $ID);
     }
 
     public function render($format, Doku_Renderer $renderer, $data) {
+        global $ID;
 
-        if ($this->check[$format]++) return false;
-        list($state, $match) = $data;
-        list($key, $value) = explode(':', substr($match, 2, -2), 2);
-        $key = strtolower($key);
+        list($state, $short_title, $id) = $data;
 
         if ($format == 'metadata') {
-             $renderer->meta[$key] = trim($value);
+             if (strcmp($id, $ID) !== 0) return false;
+             $renderer->meta['shorttitle'] = $short_title;
         }
         return true;
     }
