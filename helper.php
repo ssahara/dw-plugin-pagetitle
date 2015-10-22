@@ -18,8 +18,10 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
      * @return bool|string html, or false if no data, true if printed
      */
     function tpl_youarehere($start_depth = 0, $print = true) {
+        global $lang;
 
-        $out = $this->html_youarehere($start_depth);
+        $out = '<span class="bchead">'.$lang['youarehere'].'</span>';
+        $out.= $this->html_youarehere($start_depth);
         if ($print) {
             echo $out; return (bool) $out;
         }
@@ -27,7 +29,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
     }
 
     function html_youarehere($start_depth = 0) {
-        global $conf, $ID, $lang;
+        global $conf, $ID;
 
         if ($ID == $conf['start']) {
             $page = '';
@@ -41,8 +43,6 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
         $depth = count($parts) -1;
 
         $out = '';
-        //$out = '<span class="bchead">'.$lang['youarehere'].' </span>';
-
         $ns = '';
         for ($i = $start_depth; $i < count($parts); $i++) {
             $ns.= $parts[$i];
