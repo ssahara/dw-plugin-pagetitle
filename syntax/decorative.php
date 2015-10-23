@@ -19,11 +19,12 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
-    protected $entry_pattern = '<title>(?=.*?</title>)';
+    protected $entry_pattern = '<title\b[^>\r\n]*?>(?=.*?</title>)';
     protected $exit_pattern  = '</title>';
 
     protected $pluginMode, $name;
     protected $store, $capture;
+    protected $params;          // store title tag parameters
     protected $check = array(); // ensure first title only effective, used in render()
 
     function __construct() {
@@ -57,14 +58,15 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         switch ($state) {
             case DOKU_LEXER_ENTER :
-                $data = array($state, $ID);
+                $params = strtolower(trim(substr($match, strpos($match,' '), -1)));
+                $data = array($state, $ID, $params);
                 $handler->addPluginCall($this->name, $data, $state,$pos,$match);
                 return false;
             case DOKU_LEXER_UNMATCHED :
                 $handler->_addCall('cdata', array($match), $pos);
                 return false;
             case DOKU_LEXER_EXIT :
-                $data = array($state, $ID);
+                $data = array($state, $ID, '');
                 $handler->addPluginCall($this->name, $data, $state,$pos,$match);
                 $this->check[$ID]++;
                 return false;
@@ -78,9 +80,11 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
 
-        list($state, $id) = $data;
+        list($state, $id, $params) = $data;
         switch ($state) {
             case DOKU_LEXER_ENTER :
+                // store title tag parameters
+                $this->params = $params;
                 // preserve variables
                 $this->store = $renderer->doc;
                 $this->capture = $renderer->capture;
@@ -121,8 +125,12 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      * Revised procedures for renderers
      */
     protected function _xhtml_render($decorative_title, $title, $renderer) {
+        if (($wrap = $this->loadHelper('wrap')) != NULL) {
+            $attr = $wrap->buildAttributes($this->params, 'pagetitle');
+        } else $attr = ' class="pagetitle"';
+
         // even title in <h1>, it never shown up in the table of contents (TOC)
-        $renderer->doc .= '<h1 class="pagetitle">';
+        $renderer->doc .= '<h1'.$attr.'>';
         $renderer->doc .= $decorative_title;
         $renderer->doc .= '</h1>'.DOKU_LF;
         return true;
