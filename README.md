@@ -44,4 +44,4 @@ Licensed under the GNU Public License (GPL) version 2
 More infomation is available:
   * https://www.dokuwiki.org/plugin:pagetitle
 
-(c) 2014-2015 Satoshi Sahara \<sahara.satoshi@gmail.com>
+(c) 2014-2016 Satoshi Sahara \<sahara.satoshi@gmail.com>
