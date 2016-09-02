@@ -22,13 +22,13 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     protected $entry_pattern = '<title\b[^>\r\n]*?>(?=.*?</title>)';
     protected $exit_pattern  = '</title>';
 
-    protected $pluginMode, $name;
+    protected $mode, $name;
     protected $store, $capture;
     protected $params;          // store title tag parameters
     protected $check = array(); // ensure first title only effective, used in render()
 
     function __construct() {
-        $this->pluginMode = substr(get_class($this), 7); // drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
         $this->name = substr(get_class($this), 14);
     }
 
@@ -39,10 +39,10 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
     // Connect pattern to lexer
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern($this->entry_pattern, $mode, $this->pluginMode);
+        $this->Lexer->addEntryPattern($this->entry_pattern, $mode, $this->mode);
     }
     function postConnect() {
-        $this->Lexer->addExitPattern($this->exit_pattern, $this->pluginMode);
+        $this->Lexer->addExitPattern($this->exit_pattern, $this->mode);
     }
 
 
