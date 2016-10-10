@@ -10,7 +10,7 @@
  * itlic, subscript and superscript, but title metadata remains simple
  * plain text without any markup.
  *   example
- *        wiki source:    <title> H<sub>s</sub>O </title>
+ *        wiki source:    <title> H<sub>2</sub>O </title>
  *        page (html):    <h1 class="pagetitle">H<sub>2</sub>O</h1>
  *        title metadata: H2O
  */
@@ -58,7 +58,11 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         switch ($state) {
             case DOKU_LEXER_ENTER :
-                $params = strtolower(trim(substr($match, strpos($match,' '), -1)));
+                if (($n = strpos($match, ' ')) !== false) {
+                    $params = strtolower(trim(substr($match, $n, -1)));
+                } else {
+                    $params = '';
+                }
                 $data = array($state, $ID, $params);
                 $handler->addPluginCall($this->name, $data, $state,$pos,$match);
                 return false;
