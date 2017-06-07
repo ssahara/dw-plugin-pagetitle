@@ -145,4 +145,9 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         return true;
     }
 
+    protected function _text_render($decorative_title, $title, $renderer) {
+        $renderer->doc .= $title;
+        return true;
+    }
+
 }
