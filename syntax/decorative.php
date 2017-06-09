@@ -23,7 +23,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     protected $exit_pattern  = '</title>';
 
     protected $mode, $name;
-    protected $store, $capture;
+    protected $doc, $capture;   // store properties of $renderer
     protected $params;          // store title tag parameters
     protected $check = array(); // ensure first title only effective, used in render()
 
@@ -90,7 +90,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 // store title tag parameters
                 $this->params = $params;
                 // preserve variables
-                $this->store = $renderer->doc;
+                $this->doc     = $renderer->doc;
                 $this->capture = $renderer->capture;
 
                 // set doc blank to store parsed "UNMATHCED" content
@@ -105,7 +105,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 $decorative_title = trim($renderer->doc);
 
                 // restore variable
-                $renderer->doc = $this->store;
+                $renderer->doc = $this->doc;
                 if ($format == 'metadata') $renderer->capture = $this->capture;
                 break; // do not return here
             default:
@@ -146,7 +146,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     }
 
     protected function _text_render($decorative_title, $title, $renderer) {
-        $renderer->doc .= $title;
+        $renderer->doc .= $title . DOKU_LF;
         return true;
     }
 

@@ -35,10 +35,12 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         list($state, $match) = $data;
         $template = plugin_load('helper','pagetitle');
 
-        $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
-        $renderer->doc .= '<div class="youarehere">';
-        $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
-        $renderer->doc .= '</div>'.DOKU_LF;
+        if ($format == 'xhtml') {
+            $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
+            $renderer->doc .= '<div class="youarehere">';
+            $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
+            $renderer->doc .= '</div>'.DOKU_LF;
+        }
         return true;
     }
 
