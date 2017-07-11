@@ -140,36 +140,29 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         if (empty($title)) return false;
 
         // output title
-        $method = '_' . $format . '_render';
-        if (method_exists($this, $method)) {
-            return $this->$method($decorative_title, $title, $renderer);
+        switch ($format) {
+            case 'xhtml':
+                if (($wrap = $this->loadHelper('wrap')) != NULL) {
+                    $attr = $wrap->buildAttributes($this->params, 'pagetitle');
+                } else {
+                    $attr = ' class="pagetitle"';
+                }
+
+                // even title in <h1>, it never shown up in the table of contents (TOC)
+                $renderer->doc .= '<h1'.$attr.'>';
+                $renderer->doc .= $decorative_title;
+                $renderer->doc .= '</h1>'.DOKU_LF;
+                return true;
+
+            case 'text':
+                $renderer->doc .= $title . DOKU_LF;
+                return true;
+
+            case 'metadata':
+                $renderer->meta['title'] = $title;
+                return true;
         }
-        else return false;
-    }
-
-    /**
-     * Revised procedures for renderers
-     */
-    protected function _xhtml_render($decorative_title, $title, $renderer) {
-        if (($wrap = $this->loadHelper('wrap')) != NULL) {
-            $attr = $wrap->buildAttributes($this->params, 'pagetitle');
-        } else $attr = ' class="pagetitle"';
-
-        // even title in <h1>, it never shown up in the table of contents (TOC)
-        $renderer->doc .= '<h1'.$attr.'>';
-        $renderer->doc .= $decorative_title;
-        $renderer->doc .= '</h1>'.DOKU_LF;
-        return true;
-    }
-
-    protected function _metadata_render($decorative_title, $title, $renderer) {
-        $renderer->meta['title'] = $title;
-        return true;
-    }
-
-    protected function _text_render($decorative_title, $title, $renderer) {
-        $renderer->doc .= $title . DOKU_LF;
-        return true;
+        return false;
     }
 
 }
