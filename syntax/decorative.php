@@ -19,34 +19,42 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
-    protected $entry_pattern = '<title\b[^>\r\n]*?>(?=.*?</title>)';
-    protected $exit_pattern  = '</title>';
+    protected $mode;
+    protected $pattern = array();
 
-    protected $mode, $name;
     protected $doc, $capture;   // store properties of $renderer
     protected $params;          // store title tag parameters
     protected $check = array(); // ensure first title only effective, used in render()
 
     function __construct() {
         $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
-        $this->name = substr(get_class($this), 14);
+
+        // syntax patterns
+        $this->pattern[1] = '<title\b[^>\r\n]*?>(?=.*?</title>)'; // entry
+        $this->pattern[4] = '</title>';                           // exit
+        $this->pattern[5] = '~~Title:[^\r\n]*?~~';                // special
     }
 
     function getType() { return 'baseonly';}
     function getPType() { return 'block';}
-    function getAllowedTypes() { return array('formatting', 'substition', 'disabled'); }
     function getSort() { return 49; }
+    function getAllowedTypes() {
+        return array('formatting', 'substition', 'disabled');
+    }
 
-    // Connect pattern to lexer
+    /**
+     * Connect pattern to lexer
+     */
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern($this->entry_pattern, $mode, $this->mode);
+        $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
+        $this->Lexer->addEntryPattern($this->pattern[1], $mode, $this->mode);
     }
     function postConnect() {
-        $this->Lexer->addExitPattern($this->exit_pattern, $this->mode);
+        $this->Lexer->addExitPattern($this->pattern[4], $this->mode);
     }
 
 
-    /*
+    /**
      * Handle the match
      */
     function handle($match, $state, $pos, Doku_Handler $handler) {
@@ -56,7 +64,14 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
             return false; // ignore match after once handled
         }
 
+        $plugin = substr(get_class($this), 14);
+
         switch ($state) {
+            case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
+                $title = hsc(trim(substr($match, 8, -2)));
+                $this->check[$ID]++;
+                return array($state, $ID, $title);
+
             case DOKU_LEXER_ENTER :
                 if (($n = strpos($match, ' ')) !== false) {
                     $params = strtolower(trim(substr($match, $n, -1)));
@@ -64,14 +79,14 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                     $params = '';
                 }
                 $data = array($state, $ID, $params);
-                $handler->addPluginCall($this->name, $data, $state,$pos,$match);
+                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 return false;
             case DOKU_LEXER_UNMATCHED :
                 $handler->_addCall('cdata', array($match), $pos);
                 return false;
             case DOKU_LEXER_EXIT :
                 $data = array($state, $ID, '');
-                $handler->addPluginCall($this->name, $data, $state,$pos,$match);
+                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 $this->check[$ID]++;
                 return false;
         }
@@ -86,6 +101,13 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         list($state, $id, $params) = $data;
         switch ($state) {
+            case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
+                if ($format == 'metadata') {
+                    $renderer->meta['title'] = $params;
+                    return true;
+                }
+                return false;
+
             case DOKU_LEXER_ENTER :
                 // store title tag parameters
                 $this->params = $params;
