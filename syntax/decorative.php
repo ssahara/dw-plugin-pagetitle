@@ -73,19 +73,20 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 return array($state, $ID, $title);
 
             case DOKU_LEXER_ENTER :
+                // store title tag parameters
                 if (($n = strpos($match, ' ')) !== false) {
-                    $params = strtolower(trim(substr($match, $n, -1)));
+                    $this->params = strtolower(trim(substr($match, $n, -1)));
                 } else {
-                    $params = '';
+                    $this->params = '';
                 }
-                $data = array($state, $ID, $params);
+                $data = array($state, $ID, '');
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 return false;
             case DOKU_LEXER_UNMATCHED :
                 $handler->_addCall('cdata', array($match), $pos);
                 return false;
             case DOKU_LEXER_EXIT :
-                $data = array($state, $ID, '');
+                $data = array($state, $ID, $this->params);
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 $this->check[$ID]++;
                 return false;
@@ -99,18 +100,17 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
 
-        list($state, $id, $params) = $data;
+        list($state, $id, $param) = $data;
+
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 if ($format == 'metadata') {
-                    $renderer->meta['title'] = $params;
+                    $renderer->meta['title'] = $param;
                     return true;
                 }
                 return false;
 
             case DOKU_LEXER_ENTER :
-                // store title tag parameters
-                $this->params = $params;
                 // preserve variables
                 $this->doc     = $renderer->doc;
                 $this->capture = $renderer->capture;
@@ -133,6 +133,9 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
             default:
                 return false; // this should never happen
         }
+        // follow up only for DOKU_LEXER_EXIT
+
+        // skip calls of different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
         // get plain title
@@ -143,7 +146,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         switch ($format) {
             case 'xhtml':
                 if (($wrap = $this->loadHelper('wrap')) != NULL) {
-                    $attr = $wrap->buildAttributes($this->params, 'pagetitle');
+                    $attr = $wrap->buildAttributes($param, 'pagetitle');
                 } else {
                     $attr = ' class="pagetitle"';
                 }
