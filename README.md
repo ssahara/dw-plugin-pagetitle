@@ -23,7 +23,7 @@ to "navigation" (other than "0") in order to show specified title in the browser
 If you want to set a page title without showing itself on the page, you can instead use following syntax macro:
 
 ```
-  ~~Title: **Page Title** plugin for DokuWiki ~~
+  ~~Title: Page Title plugin for DokuWiki ~~
 ```
 
 
