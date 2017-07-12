@@ -1,4 +1,4 @@
-Page Title plugin for DokuWiki
+PageTitle plugin for DokuWiki
 ==============================
 
 Render title on the page
@@ -8,7 +8,7 @@ Define and render a [pagename](https://www.dokuwiki.org/pagename), in other word
 
 ```
   <title>
-  **Page Title** plugin for DokuWiki
+  **PageTitle** plugin for DokuWiki
   </title>
 ```
 
@@ -23,7 +23,7 @@ to "navigation" (other than "0") in order to show specified title in the browser
 If you want to set a page title without showing itself on the page, you can instead use following syntax macro:
 
 ```
-  ~~Title: Page Title plugin for DokuWiki ~~
+  ~~Title: PageTitle plugin for DokuWiki ~~
 ```
 
 
