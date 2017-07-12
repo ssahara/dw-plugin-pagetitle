@@ -1,7 +1,7 @@
 base  pagetitle
-name  Page Title plugin
+name  PageTitle plugin
 author Satoshi Sahara
 email  sahara.satoshi@gmail.com
-date   2017-06-07
+date   2017-07-12
 desc   Define a title of the wiki page by <title> tag. This plugin allows to write decorative title on the page with setting plain title text in metadata storage.
 url    https://www.dokuwiki.org/plugin:pagetitle
