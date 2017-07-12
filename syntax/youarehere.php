@@ -11,11 +11,14 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
-    protected $special_pattern = '<!-- ?YOU_ARE_HERE ?-->';
     protected $mode;
+    protected $pattern =array();
 
     function __construct() {
         $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+
+        //syntax patterns
+        $this->pattern[5] = '<!-- ?YOU_ARE_HERE ?-->';
     }
 
     public function getType() { return 'substition'; }
@@ -23,7 +26,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     public function getSort() { return 990; }
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern($this->special_pattern, $mode, $this->mode);
+        $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
     public function handle($match, $state, $pos, Doku_Handler $handler) {

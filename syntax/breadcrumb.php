@@ -11,12 +11,14 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
-    protected $special_pattern = '~~ShortTitle:.*?~~';
-    protected $check = array(); // ensure first matched pattern only effective
     protected $mode;
+    protected $check = array(); // ensure first matched pattern only effective
 
     function __construct() {
         $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+
+        //syntax patterns
+        $this->pattern[5] = '~~ShortTitle:.*?~~';
     }
 
     public function getType() { return 'substition'; }
@@ -24,7 +26,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     public function getSort() { return 990; }
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern($this->special_pattern, $mode, $this->mode);
+        $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
     public function handle($match, $state, $pos, Doku_Handler $handler) {
@@ -34,8 +36,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
             return false; // ignore match after once handled
         }
 
-        list($key, $value) = explode(':', substr($match, 2, -2), 2);
-        $short_title = trim($value);
+        $short_title = trim(substr($match, 13, -2));
         return array($state, $short_title, $ID);
     }
 
@@ -43,6 +44,8 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         list($state, $short_title, $id) = $data;
+
+        // skip calls of different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
         switch ($format) {
