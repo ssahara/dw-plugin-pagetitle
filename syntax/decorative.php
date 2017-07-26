@@ -68,7 +68,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
-                $title = hsc(trim(substr($match, 8, -2)));
+                $title = trim(substr($match, 8, -2));
                 $this->check[$ID]++;
                 return array($state, $ID, $title);
 
