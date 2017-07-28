@@ -100,11 +100,10 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
-                if ($format == 'metadata') {
-                    $renderer->meta['title'] = $param;
-                    return true;
-                }
-                return false;
+                // $decorative_title = $param;
+                // convert to curly quote characters depending on $conf['typography']
+                $decorative_title = substr($this->render_text($param), 5, -6);
+                break;
 
             case DOKU_LEXER_ENTER :
                 // preserve variables
