@@ -60,16 +60,11 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
 
-        if ($this->check[$ID] > 0) {
-            return false; // ignore match after once handled
-        }
-
         $plugin = substr(get_class($this), 14);
 
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 $title = trim(substr($match, 8, -2));
-                $this->check[$ID]++;
                 return array($state, $ID, $title);
 
             case DOKU_LEXER_ENTER :
@@ -82,13 +77,14 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 $data = array($state, $ID, '');
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 return false;
+
             case DOKU_LEXER_UNMATCHED :
                 $handler->_addCall('cdata', array($match), $pos);
                 return false;
+
             case DOKU_LEXER_EXIT :
                 $data = array($state, $ID, $this->params);
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
-                $this->check[$ID]++;
                 return false;
         }
         return false;
@@ -137,6 +133,14 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         // skip calls of different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
+
+        // ensure first title should be effective
+        if ($this->check[$format]) {
+            // ignore once title has been rendered
+            return false;
+        } else {
+            $this->check[$format] = true;
+        }
 
         // get plain title
         $title = htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES);
