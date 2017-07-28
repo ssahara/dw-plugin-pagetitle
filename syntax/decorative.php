@@ -148,6 +148,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         // output title
         switch ($format) {
             case 'xhtml':
+                if ($state == DOKU_LEXER_SPECIAL) return false;
                 if (($wrap = $this->loadHelper('wrap')) != NULL) {
                     $attr = $wrap->buildAttributes($param, 'pagetitle');
                 } else {
