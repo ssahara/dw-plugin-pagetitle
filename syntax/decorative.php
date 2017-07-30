@@ -134,11 +134,9 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         if (strcmp($id, $ID) !== 0) return false;
 
         // ensure first title should be effective
-        if ($this->check[$format]) {
+        if ($this->check[$format]++ > 0) {
             // ignore once title has been rendered
             return false;
-        } else {
-            $this->check[$format] = true;
         }
 
         // get plain title
