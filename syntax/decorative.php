@@ -102,7 +102,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 // $decorative_title = $param;
                 // convert to curly quote characters depending on $conf['typography']
-                $decorative_title = trim(substr(trim($this->render_text($param)), 3, -4));
+                $decorative_title = $this->render_text($param);
                 break;
 
             case DOKU_LEXER_ENTER :
@@ -142,7 +142,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         }
 
         // get plain title
-        $title = htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES);
+        $title = trim(htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES));
         if (empty($title)) return false;
 
         // output title
