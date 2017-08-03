@@ -22,9 +22,11 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     protected $mode;
     protected $pattern = array();
 
+    private   $counter = null;  // helper component "pagetitle_counter"
+    private   $renderedOnce = null;
+
     protected $doc, $capture;   // store properties of $renderer
     protected $params;          // store title tag parameters
-    protected $check = array(); // ensure first title only effective, used in render()
 
     function __construct() {
         $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
@@ -33,6 +35,9 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         $this->pattern[1] = '<title\b[^>\r\n]*?>(?=.*?</title>)'; // entry
         $this->pattern[4] = '</title>';                           // exit
         $this->pattern[5] = '~~Title:[^\r\n]*?~~';                // special
+
+        // assign helper component to dedicated class property
+        $this->counter = $this->loadHelper('pagetitle_counter', true);
     }
 
     function getType() { return 'baseonly';}
@@ -133,9 +138,15 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         // skip calls of different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
-        // ensure first title should be effective
-        if ($this->check[$format]++ > 0) {
-            // ignore once title has been rendered
+        // assign a closure function to the class property
+        if ($this->renderedOnce === null) {
+            $this->renderedOnce = $this->counter->create_counter($item);
+        }
+
+        // ensure first instruction only effective
+        //if (($n = call_user_func($this->renderedOnce, $format)) > 0) { // PHP < 7.0
+        if (($n = ($this->renderedOnce)($format)) > 0) {
+            error_log($this->mode.' Render ignore '.$n.' '.$format.' '.$short_title.' '.$ID);
             return false;
         }
 

@@ -80,7 +80,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         // ensure first instruction only effective
         //if (($n = call_user_func($this->renderedOnce, $format)) > 0) { // PHP < 7.0
         if (($n = ($this->renderedOnce)($format)) > 0) {
-            error_log($rhis->mode.' Render ignore '.$n.' '.$format.' '.$short_title.' '.$ID);
+            error_log($this->mode.' Render ignore '.$n.' '.$format.' '.$short_title.' '.$ID);
             return false;
         }
 
