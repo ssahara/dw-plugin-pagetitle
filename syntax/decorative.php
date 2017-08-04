@@ -130,7 +130,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         }
         // follow up only for DOKU_LEXER_EXIT
 
-        // skip calls of different pages (eg. title of included page)
+        // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
         // ensure first title should be effective
