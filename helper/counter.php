@@ -13,6 +13,9 @@ class helper_plugin_pagetitle_counter extends DokuWiki_Plugin {
     /**
      * tally counter utility - incrementally counts items
      *
+     * @param string|integer $item  item that to be counted
+     * @return closure function
+     *
      * Note: assign this closure function to variables to use counter
      *   $obj = $this->loadHelper('pagetitle_counter');
      *   $counter = $obj->create_counter($item);
