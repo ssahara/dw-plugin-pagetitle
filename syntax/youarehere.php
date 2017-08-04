@@ -21,22 +21,37 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $this->pattern[5] = '<!-- ?YOU_ARE_HERE ?-->';
     }
 
-    public function getType() { return 'substition'; }
-    public function getPType(){ return 'block'; }
-    public function getSort() { return 990; }
+    function getType() { return 'substition'; }
+    function getPType(){ return 'block'; }
+    function getSort() { return 990; }
 
-    public function connectTo($mode) {
+    /**
+     * Connect pattern to lexer
+     */
+    function connectTo($mode) {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
-    public function handle($match, $state, $pos, Doku_Handler $handler) {
-        return array($state, $match);
+    /**
+     * Handle the match
+     */
+    function handle($match, $state, $pos, Doku_Handler $handler) {
+        global $ID;
+        return array($state, $match, $ID);
     }
 
-    public function render($format, Doku_Renderer $renderer, $data) {
+    /**
+     * Create output
+     */
+    function render($format, Doku_Renderer $renderer, $data) {
+        global $ID;
 
-        list($state, $match) = $data;
-        $template = plugin_load('helper','pagetitle');
+        list($state, $match, $id) = $data;
+
+        // skip calls that belong to different pages (eg. title of included page)
+        if (strcmp($id, $ID) !== 0) return false;
+
+        $template = $this->loadHelper('pagetitle');
 
         if ($format == 'xhtml') {
             $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
