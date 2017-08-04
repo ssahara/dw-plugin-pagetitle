@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki plugin PageTitle Breadcrums; Syntax component
+ * DokuWiki plugin PageTitle Breadcrumb; Syntax component
  * Macro to set the short title of the page in metadata
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
@@ -12,6 +12,8 @@ if (!defined('DOKU_INC')) die();
 class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
     protected $mode;
+    protected $pattern = array();
+
     protected $check = array(); // ensure first matched pattern only effective
 
     function __construct() {
@@ -21,15 +23,21 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         $this->pattern[5] = '~~ShortTitle:.*?~~';
     }
 
-    public function getType() { return 'substition'; }
-    public function getPType(){ return 'normal'; }
-    public function getSort() { return 990; }
+    function getType() { return 'substition'; }
+    function getPType(){ return 'normal'; }
+    function getSort() { return 990; }
 
-    public function connectTo($mode) {
+    /**
+     * Connect pattern to lexer
+     */
+    function connectTo($mode) {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
-    public function handle($match, $state, $pos, Doku_Handler $handler) {
+    /**
+     * Handle the match
+     */
+    function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
 
         if ($this->check[$ID]++) {
@@ -40,12 +48,15 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         return array($state, $short_title, $ID);
     }
 
-    public function render($format, Doku_Renderer $renderer, $data) {
+    /**
+     * Create output
+     */
+    function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
 
         list($state, $short_title, $id) = $data;
 
-        // skip calls of different pages (eg. title of included page)
+        // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
         switch ($format) {
