@@ -28,9 +28,9 @@ class helper_plugin_pagetitle_counter extends DokuWiki_Plugin {
      *   echo call_user_func($MyClass->counter, $something);
      *
      */
-    function create_counter($item=0) {
+    function create_counter($item='') {
         $counter = array();
-        return function ($item=0) use (&$counter) {
+        return function ($item='') use (&$counter) {
             return @$counter[$item]++ ?: 0; // restrain notice of Undefined index
         };
     }
