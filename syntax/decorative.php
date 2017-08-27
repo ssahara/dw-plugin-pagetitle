@@ -174,6 +174,9 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 return true;
 
             case 'metadata':
+                // set metadata for metadata indexer
+                $renderer->meta['plugin']['pagetitle'] = $ID;
+
                 $renderer->meta['title'] = $title;
                 return true;
         }
