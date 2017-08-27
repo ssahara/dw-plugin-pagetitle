@@ -5,3 +5,4 @@
  */
 
 $conf['useTentativeTitle'] = 1; // true
+$conf['usePersistent']     = 0; // false

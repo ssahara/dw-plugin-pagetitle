@@ -36,7 +36,7 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
      * the index will be re-created when the version increased
      */
     function _indexer_version(Doku_Event $event, $param) {
-        $event->data['plgin_pagetitle'] = '1.0';
+        $event->data['plgin_pagetitle'] = '1.'.$this->getConf('usePersistent');
     }
 
     /**
@@ -90,6 +90,11 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
                 // tentatively assign full id as page title, just to distinguish
                 // with normal setting noNS($ID) and to expire .meta file later
                 $meta['title'] = $ID;
+            }
+
+            // remove unnecessary persistent metadata
+            if (!$this->getConf('usePersistent')) {
+                unset($persistent['title']);
             }
         }
     }

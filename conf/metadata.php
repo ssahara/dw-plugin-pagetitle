@@ -5,3 +5,4 @@
  */
 
 $meta['useTentativeTitle'] = array('onoff');
+$meta['usePersistent']     = array('onoff');
