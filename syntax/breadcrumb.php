@@ -14,13 +14,17 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     protected $mode;
     protected $pattern = array();
 
-    protected $check = array(); // ensure first matched pattern only effective
+    private   $counter      = null;  // helper component "pagetitle_counter"
+    private   $handledOnce  = null;  // counter used in handle()
 
     function __construct() {
         $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
 
         //syntax patterns
         $this->pattern[5] = '~~ShortTitle:.*?~~';
+
+        // assign helper component to dedicated class property
+        $this->counter = $this->loadHelper('pagetitle_counter', true);
     }
 
     function getType() { return 'substition'; }
@@ -40,10 +44,18 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
 
-        if ($this->check[$ID]++) {
-            return false; // ignore match after once handled
+        // assign a closure function to the class property
+        if ($this->handledOnce === null) {
+            $this->handledOnce = $this->counter->create_counter($item);
         }
 
+        // ensure first matched pattern only effective
+        $n = (version_compare(PHP_VERSION, '7.0.0') >= 0)
+            ? ($this->handledOnce)($ID)
+            : call_user_func($this->handledOnce, $ID);
+        if ($n > 0) return false;
+
+        // get short title
         $short_title = trim(substr($match, 13, -2));
         return array($state, $short_title, $ID);
     }
