@@ -78,7 +78,7 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
          * Therfore, the value of "title" metadata will remain wrong with that
          * pagetitle plugin intended.
          *
-         * For the purpose to triger PageTitle plugin's renderer, we tentatively
+         * For the purpose to trigger PageTitle plugin's renderer, we tentatively
          * set $ID as "title" to tell DokuWiki caching mechanism so that old
          * cache need to be purged and metadata must be rebuild again.
          */
@@ -86,23 +86,23 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
         $meta       =& $event->data['current'];
         $persistent =& $event->data['persistent'];
 
-        // check whether pagetitle syntax had used in the wiki
+        // check metadata index whether pagetitle had used in the wiki page
         $pages = idx_get_indexer()->getPages('plugin_pagetitle');
         $pageTitled = in_array($ID, $pages);
 
+        if (!$pageTitled) return;
 
-        if ($pageTitled && !isset($meta['plugin']['pagetitle'])) {
-            // for pages found in metadata index but xhtml has not rendered yet
-            if ($this->getConf('useTentativeTitle')) {
-                // tentatively assign full id as page title, just to distinguish
-                // with normal setting noNS($ID) and to expire .meta file later
-                $meta['title'] = $ID;
-            }
+        // check whether page has rendered by pagetitle plugin
+        if (!isset($meta['plugin']['pagetitle'])) {
+            // tentatively assign full id as page title, just to distinguish
+            // with normal setting noNS($ID) and to purge .meta file later
+            $meta['title'] = $ID;
+        }
 
-            // remove unnecessary persistent metadata
-            if (!$this->getConf('usePersistent')) {
-                unset($persistent['title']);
-            }
+        // unnecessary persistent metadata should be removed in syntax component,
+        // however it may be possible to remove it here
+        if (!$this->getConf('usePersistent')) {
+            unset($persistent['title']);
         }
     }
 
@@ -116,28 +116,27 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
         // we're only interested in wiki pages
         if (!isset($cache->page)) return;
 
-        // check whether pagetitle had used in the wiki page
+        // check metadata index whether pagetitle had used in the wiki page
         $pages = idx_get_indexer()->getPages('plugin_pagetitle');
         $pageTitled = in_array($cache->page, $pages);
 
         if (!$pageTitled) return;
 
-        if ($this->getConf('useTentativeTitle')) {
-
-            $title = p_get_metadata($cache->page, 'title', METADATA_DONT_RENDER);
- 
-            switch ($cache->mode) {
-                case 'metadata': // metadata cache?
-                    $cache->depends['purge'] = ($title == $cache->page) ? true : false;
-                    break;
-                case 'i': // instruction cache
-                    $cache->depends['purge'] = ($title == $cache->page) ? true : false;
-                    break;
-                case 'xhtml': // xhtml cache
-                    $cache->depends['purge'] = ($title == $cache->page) ? true : false;
-                    break;
-            }
+        // check title metadata whether cache files should be purged
+        $title = p_get_metadata($cache->page, 'title', METADATA_DONT_RENDER);
+        switch ($cache->mode) {
+            case 'metadata': // metadata cache?
+                $request = ($title == $cache->page) ? true : false;
+                break;
+            case 'i': // instruction cache
+                $request = ($title == $cache->page) ? true : false;
+                break;
+            case 'xhtml': // xhtml cache
+                $request = ($title == $cache->page) ? true : false;
+                break;
         }
+        // request purge if necessary
+        $cache->depends['purge'] = $request;
     }
 
 }
