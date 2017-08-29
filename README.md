@@ -13,7 +13,8 @@ Define and render a [pagename](https://www.dokuwiki.org/pagename), in other word
 ```
 
 The specified page title is rendered as `<h1 class="pagetitle">` element on the page.
-You can use **bold**, *italic*, <sup>superscript</sup> and <sub>subscript</sub> text to show appropriate title on the page, for instance a chemical formula [Fe<sup>II</sup>(CN)<sub>6</sub>]<sup>4-</sup>. The formatted title is shown on the page, but it is converted to a plain text for the title of HTML document, like `[FeII(CN)6]4-`. TageTitle plugin overwrites 'title' value of the [metadata](https://www.dokuwiki.org/devel:metadata) of the page to store the plain title text.
+You can use **bold**, *italic*, <sup>superscript</sup> and <sub>subscript</sub> text to show appropriate title on the page, for instance a chemical formula [Fe<sup>II</sup>(CN)<sub>6</sub>]<sup>4-</sup>. The formatted title is shown on the page, but it is converted to a plain text for the title of HTML document, like `[FeII(CN)6]4-`. PageTitle plugin overwrites 'title' value of the [metadata](https://www.dokuwiki.org/devel:metadata) of the page to store the plain title text.
+You may choose to use persistent metadata storage in the Configuration manager to prevent pagetitle reverted or wrongly set during rendering process.
 
 The page title becomes the title of HTML document in combination with your DokuWiki [site title](https://www.dokuwiki.org/config:title).
 You may need to set [useheading](https://www.dokuwiki.org/config:useheading) option 
@@ -32,7 +33,7 @@ Hierarchical breadcrumbs on the page
 (expermental)
 
 ```
-<!--YOU_ARE_HERE-->
+  <!--YOU_ARE_HERE-->
 ```
 
 This syntax allow you to put hierarchical breadcrumbs in the page. The place holder `<!--YOU_ARE_HERE-->` is replaced by the hierarchical breadcrumbs provided by this plugin,  which uses page id for a breadcrumbs name independently from [$conf('useheading')](https://www.dokuwiki.org/config:useheading) setting.
@@ -41,7 +42,7 @@ This syntax allow you to put hierarchical breadcrumbs in the page. The place hol
   ~~ShortTitle: PageTitle ~~
 ```
 
-ShortTitle macro is available if you want use shorter title other than (longer) pagetitle in the hierarchical breadcrumbs.
+ShortTitle macro is available if you want use shorter title instead of (longer) pagetitle in the hierarchical breadcrumbs.
 
 
 ----
