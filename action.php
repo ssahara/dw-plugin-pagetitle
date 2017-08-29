@@ -61,19 +61,26 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
         global $ID;
 
         /*
-         * The PageTitle plugin will overwrite "title" metadata of the page as
-         * specific "pagetitle" when wiki text has rendered in xhtml format mode
-         * and are kept in each .meta files as metadata storage.
-         * Each metadata storage (.meta file) may expired or refleshed by DokuWiki
-         * or any plugins in any stage especially by calls p_get_first_heading()
-         * at least when main config modified depending on $conf[useheading].
+         * The PageTitle plugin will overwrite "title" metadata of the page
+         * with "pagetitle" specified in page source. The page must be rendered
+         * first in xhtml mode to get pagetitle and to stote it on metadata
+         * storage.
+         
+         * Each metadata storage (.meta file) may be expired or refleshed by
+         * DokuWiki or any plugins at elsewhere in any stage. For example,
+         * metadata will be expired when main config modified. DokuWiki will set
+         * again title metadata through calls p_get_first_heading() depending on
+         * $conf['useheading"] setting.
          *
-         * Then the value of "title" metadata that had overwritten as "pagetitle"
-         * will be lost or set wrong until relevant pages are rendered again in
-         * xhtm mode by PageTitle syntax plugin component.
+         * Since page text is not changed, instruction and xhtml cache files are
+         * used to set title metadata, there is no chance to handle/render page
+         * source to get pagetitle and to overwite title metadata.
+         * Therfore, the value of "title" metadata will remain wrong with that
+         * pagetitle plugin intended.
          *
-         * Here, we tentatively set $ID as "title" metadata to identify so that
-         * it should be set again during caching mechanism.
+         * For the purpose to triger PageTitle plugin's renderer, we tentatively
+         * set $ID as "title" to tell DokuWiki caching mechanism so that old
+         * cache need to be purged and metadata must be rebuild again.
          */
 
         $meta       =& $event->data['current'];
