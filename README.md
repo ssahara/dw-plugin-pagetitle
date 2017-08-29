@@ -35,7 +35,13 @@ Hierarchical breadcrumbs on the page
 <!--YOU_ARE_HERE-->
 ```
 
-This syntax allow you to put a hierarchical breadcrumbs in the page. The place holder `<!--YOU_ARE_HERE-->` is replaced by the hierarchical breadcrumbs provided by this plugin,  which uses page id for a breadcrumbs name independently from [$conf('useheading')](https://www.dokuwiki.org/config:useheading) setting.
+This syntax allow you to put hierarchical breadcrumbs in the page. The place holder `<!--YOU_ARE_HERE-->` is replaced by the hierarchical breadcrumbs provided by this plugin,  which uses page id for a breadcrumbs name independently from [$conf('useheading')](https://www.dokuwiki.org/config:useheading) setting.
+
+```
+  ~~ShortTitle: PageTitle ~~
+```
+
+ShortTitle macro is available if you want use shorter title other than (longer) pagetitle in the hierarchical breadcrumbs.
 
 
 ----
