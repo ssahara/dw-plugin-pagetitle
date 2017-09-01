@@ -31,32 +31,31 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
     function html_youarehere($start_depth = 0) {
         global $conf, $ID;
 
-        if ($ID == $conf['start']) {
-            $page = '';
-        } elseif (noNS($ID) == $conf['start']) {
-            $page = ':'.getNS($ID);  // drop tailing start
-        } else {
-            $page = ':'.$ID;
-        }
+        $nodes = explode(':', ':'.$ID); // prepend virtual root ns
+        $depth = count($nodes);
+        $items = array();
 
-        $parts = explode(':', $page);
-        $depth = count($parts) -1;
+        for ($i = $start_depth; $i < $depth; $i++) {
+            $id = $id0 = implode(':', array_slice($nodes, 0, $i+1));
 
-        $out = '';
-        $ns = '';
-        for ($i = $start_depth; $i < count($parts); $i++) {
-            $ns.= $parts[$i];
-            $id = $ns ?: $conf['start'];
-            resolve_pageid('', $id, $exists);
-            if (!$exists) {
-                $id = $ns.':';
+            if (empty($id)) {                       // root start page
+                $id = $conf['start'];
+            } elseif ($id == ':'.$conf['start']) {  // start namespace
+                $id = $conf['start'].':'.$conf['start'];
                 resolve_pageid('', $id, $exists);
+                $name = $conf['start'];
+            } else {
+                resolve_pageid('', $id, $exists);
+                if (!$exists) {
+                    $id = $id.':';
+                    resolve_pageid('', $id, $exists);
+                }
+                $name = p_get_metadata($id, 'shorttitle', METADATA_DONT_RENDER) ?: noNS($id0);
             }
-            $name = p_get_metadata($id, 'shorttitle') ?: $parts[$i];
-            $out.= '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
-            if ($i < $depth) $out.= ' ›&#x00A0;'; // separator
-            $ns.= ':';
+            $items[] = '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
         }
+        // join items with a separator
+        $out = implode(' ›&#x00A0;', $items);
         return $out;
     }
 

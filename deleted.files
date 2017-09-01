@@ -8,5 +8,5 @@
 syntax.php
 # Since 2017-07-11
 syntax/metaonly.php
-action.php
+# action.php is used again since 2017-08-27
 
