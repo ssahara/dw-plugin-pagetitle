@@ -31,7 +31,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
     function html_youarehere($start_depth = 0) {
         global $conf, $ID;
 
-        $nodes = explode(':', ':'.$ID); // prepend virtual root ns
+        //prepend virtual root namespace to $ID that is not start page
+        $nodes = ($ID == $conf['start']) ? array('') : explode(':', ':'.$ID);
         $depth = count($nodes);
         $items = array();
 
