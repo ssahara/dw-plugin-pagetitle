@@ -145,12 +145,10 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         // ensure first instruction only effective
         //if (($this->renderedOnce)($format) > 0) return false; // since PHP 7
+        //if (call_user_func($this->renderedOnce, $format) > 0) return false; // PHP 7 & 5
 
-        $func = $this->renderedOnce;
-        $n = (version_compare(PHP_VERSION, '7.0.0') >= 0)
-            ? $func($format)
-            : call_user_func($func, $format);
-        if ($n > 0) return false;
+        $counter = $this->renderedOnce; // assign property to a local variable
+        if ($counter($format) > 0) return false;
 
         // get plain title
         $title = trim(htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES));

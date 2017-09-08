@@ -51,12 +51,10 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
         // ensure first matched pattern only effective
         //if (($this->handledOnce)($ID) > 0) return false; // since PHP 7
+        //if (call_user_func($this->handledOnce, $format) > 0) return false; // PHP 7 & 5
 
-        $func = $this->handledOnce; // assign class property to local variable
-        $n = (version_compare(PHP_VERSION, '7.0.0') >= 0)
-            ? $func($ID)
-            : call_user_func($func, $ID);
-        if ($n > 0) return false;
+        $counter = $this->handledOnce; // assign class property to a local variable
+        if ($counter($ID) > 0) return false;
 
         // get short title
         $short_title = trim(substr($match, 13, -2));
