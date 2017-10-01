@@ -51,7 +51,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
 
         // ensure first matched pattern only effective
         //if (($this->handledOnce)($ID) > 0) return false; // since PHP 7
-        //if (call_user_func($this->handledOnce, $format) > 0) return false; // PHP 7 & 5
+        //if (call_user_func($this->handledOnce, $ID) > 0) return false; // PHP 7 & 5
 
         $counter = $this->handledOnce; // assign class property to a local variable
         if ($counter($ID) > 0) return false;
