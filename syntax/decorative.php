@@ -25,7 +25,6 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     private   $counter      = null;  // helper component "pagetitle_counter"
     private   $renderedOnce = null;  // counter used in render()
 
-    protected $doc, $capture;   // store properties of $renderer
 
     function __construct() {
         // syntax mode,  drop 'syntax_' from class name
@@ -97,6 +96,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      */
     function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
+        static $doc, $capture; // store properties of $renderer
 
         list($state, $id, $param) = $data;
 
@@ -109,8 +109,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
             case DOKU_LEXER_ENTER :
                 // preserve variables
-                $this->doc     = $renderer->doc;
-                $this->capture = $renderer->capture;
+                $doc     = $renderer->doc;
+                $capture = $renderer->capture;
 
                 // set doc blank to store parsed "UNMATHCED" content
                 $renderer->doc = '';
@@ -124,8 +124,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 $decorative_title = trim($renderer->doc);
 
                 // restore variable
-                $renderer->doc = $this->doc;
-                if ($format == 'metadata') $renderer->capture = $this->capture;
+                $renderer->doc = $doc;
+                if ($format == 'metadata') $renderer->capture = $capture;
                 break; // do not return here
             default:
                 return false; // this should never happen
