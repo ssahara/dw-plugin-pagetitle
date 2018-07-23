@@ -125,10 +125,10 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin {
         // check title metadata whether cache files should be purged
         $title = p_get_metadata($cache->page, 'title', METADATA_DONT_RENDER);
         switch ($cache->mode) {
-            case 'metadata': // metadata cache?
+            case 'i': // instruction cache
                 $request = ($title == $cache->page) ? true : false;
                 break;
-            case 'i': // instruction cache
+            case 'metadata': // metadata cache?
                 $request = ($title == $cache->page) ? true : false;
                 break;
             case 'xhtml': // xhtml cache

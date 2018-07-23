@@ -58,8 +58,6 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         global $ID;
         static $params; // store title tag parameters
 
-        $plugin = substr(get_class($this), 14);
-
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 $title = trim(substr($match, 8, -2));
@@ -68,9 +66,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
             case DOKU_LEXER_ENTER :
                 // store title tag parameters
                 $params = strtolower(trim(substr($match, 6, -1)));
-                $data = [$state, $ID, ''];
-                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
-                return false;
+                return $data = [$state, $ID, ''];
 
             case DOKU_LEXER_UNMATCHED :
                 $data = [$match];
@@ -78,9 +74,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 return false;
 
             case DOKU_LEXER_EXIT :
-                $data = [$state, $ID, $params];
-                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
-                return false;
+                // hand over title tag parameters to render stage
+                return $data = [$state, $ID, $params];
         }
         return false;
     }
@@ -107,20 +102,19 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 $doc     = $renderer->doc;
                 $capture = $renderer->capture;
 
-                // set doc blank to store parsed "UNMATHCED" content
+                // set doc blank prior to store "UNMATHCED" content
                 $renderer->doc = '';
                 // metadata renderer should always parse "UNMATCHED" content
-                if ($format == 'metadata') $renderer->capture = true;
-
+                $renderer->capture = ($format == 'metadata') ? true : $capture;
                 return true;
                 break;
             case DOKU_LEXER_EXIT :
-                // retrieve parsed "UNMATCHED" content
+                // retrieve "UNMATCHED" content
                 $decorative_title = trim($renderer->doc);
 
-                // restore variable
-                $renderer->doc = $doc;
-                if ($format == 'metadata') $renderer->capture = $capture;
+                // restore variables
+                $renderer->doc     = $doc;
+                $renderer->capture = ($format == 'metadata') ? true : $capture;
                 break; // do not return here
             default:
                 return false; // this should never happen
@@ -139,6 +133,21 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         // output title
         switch ($format) {
+            case 'metadata':
+                // set metadata for metadata indexer
+                $renderer->meta['plugin']['pagetitle'] = $ID;
+
+                if ($this->getConf('usePersistent')) {
+                    // metadata persistence
+                    $renderer->persistent['title'] = $title;
+                    $renderer->meta['title'] = $title;
+                } else {
+                    // erase persistent title metadata if defined
+                    unset($renderer->persistent['title']);
+                    $renderer->meta['title'] = $title;
+                }
+                return true;
+
             case 'xhtml':
                 if ($state == DOKU_LEXER_SPECIAL) return false;
                 if (($wrap = $this->loadHelper('wrap')) != NULL) {
@@ -155,21 +164,6 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
             case 'text':
                 $renderer->doc .= $title . DOKU_LF;
-                return true;
-
-            case 'metadata':
-                // set metadata for metadata indexer
-                $renderer->meta['plugin']['pagetitle'] = $ID;
-
-                if ($this->getConf('usePersistent')) {
-                    // metadata persistence
-                    $renderer->persistent['title'] = $title;
-                    $renderer->meta['title'] = $title;
-                } else {
-                    // erase persistent title metadata if defined
-                    unset($renderer->persistent['title']);
-                    $renderer->meta['title'] = $title;
-                }
                 return true;
         }
         return false;
