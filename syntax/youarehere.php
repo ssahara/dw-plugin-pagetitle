@@ -15,7 +15,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     protected $pattern =array();
 
     function __construct() {
-        $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+        // syntax mode,  drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7);
 
         //syntax patterns
         $this->pattern[5] = '<!-- ?YOU_ARE_HERE ?-->';

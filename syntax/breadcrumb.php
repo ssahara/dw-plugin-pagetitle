@@ -18,10 +18,11 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     private   $handledOnce  = null;  // counter used in handle()
 
     function __construct() {
-        $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+        // syntax mode,  drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7);
 
         //syntax patterns
-        $this->pattern[5] = '~~ShortTitle:.*?~~';
+        $this->pattern[5] = '~~ShortTitle:[^\n~]*~~';
 
         // assign helper component to dedicated class property
         $this->counter = $this->loadHelper('pagetitle_counter', true);

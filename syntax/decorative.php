@@ -29,12 +29,13 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     protected $params;          // store title tag parameters
 
     function __construct() {
-        $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+        // syntax mode,  drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7);
 
         // syntax patterns
-        $this->pattern[1] = '<title\b[^>\r\n]*?>(?=.*?</title>)'; // entry
-        $this->pattern[4] = '</title>';                           // exit
-        $this->pattern[5] = '~~Title:[^\r\n]*?~~';                // special
+        $this->pattern[1] = '<title\b[^\n>]*>(?=.*?</title>)'; // entry
+        $this->pattern[4] = '</title>';                        // exit
+        $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
 
         // assign helper component to dedicated class property
         $this->counter = $this->loadHelper('pagetitle_counter', true);
