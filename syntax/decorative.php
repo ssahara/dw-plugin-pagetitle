@@ -26,7 +26,6 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     private   $renderedOnce = null;  // counter used in render()
 
     protected $doc, $capture;   // store properties of $renderer
-    protected $params;          // store title tag parameters
 
     function __construct() {
         // syntax mode,  drop 'syntax_' from class name
@@ -65,6 +64,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      */
     function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
+        static $params; // store title tag parameters
 
         $plugin = substr(get_class($this), 14);
 
@@ -75,11 +75,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
             case DOKU_LEXER_ENTER :
                 // store title tag parameters
-                if (($n = strpos($match, ' ')) !== false) {
-                    $this->params = strtolower(trim(substr($match, $n, -1)));
-                } else {
-                    $this->params = '';
-                }
+                $params = strtolower(trim(substr($match, 6, -1)));
                 $data = array($state, $ID, '');
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 return false;
@@ -89,7 +85,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
                 return false;
 
             case DOKU_LEXER_EXIT :
-                $data = array($state, $ID, $this->params);
+                $data = array($state, $ID, $params);
                 $handler->addPluginCall($plugin, $data, $state,$pos,$match);
                 return false;
         }
