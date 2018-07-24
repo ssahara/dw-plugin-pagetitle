@@ -20,24 +20,16 @@ if (!defined('DOKU_INC')) die();
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
     protected $mode;
-    protected $pattern = array();
-
-    private   $counter      = null;  // helper component "pagetitle_counter"
-    private   $renderedOnce = null;  // counter used in render()
-
-    protected $doc, $capture;   // store properties of $renderer
-    protected $params;          // store title tag parameters
+    protected $pattern = [];
 
     function __construct() {
-        $this->mode = substr(get_class($this), 7); // drop 'syntax_' from class name
+        // syntax mode,  drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7);
 
         // syntax patterns
-        $this->pattern[1] = '<title\b[^>\r\n]*?>(?=.*?</title>)'; // entry
-        $this->pattern[4] = '</title>';                           // exit
-        $this->pattern[5] = '~~Title:[^\r\n]*?~~';                // special
-
-        // assign helper component to dedicated class property
-        $this->counter = $this->loadHelper('pagetitle_counter', true);
+        $this->pattern[1] = '<title\b[^\n>]*>(?=.*?</title>)'; // entry
+        $this->pattern[4] = '</title>';                        // exit
+        $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
     }
 
     function getType() { return 'baseonly';}
@@ -64,33 +56,26 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      */
     function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
-
-        $plugin = substr(get_class($this), 14);
+        static $params; // store title tag parameters
 
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 $title = trim(substr($match, 8, -2));
-                return array($state, $ID, $title);
+                return $data = [$state, $ID, $title];
 
             case DOKU_LEXER_ENTER :
                 // store title tag parameters
-                if (($n = strpos($match, ' ')) !== false) {
-                    $this->params = strtolower(trim(substr($match, $n, -1)));
-                } else {
-                    $this->params = '';
-                }
-                $data = array($state, $ID, '');
-                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
-                return false;
+                $params = strtolower(trim(substr($match, 6, -1)));
+                return $data = [$state, $ID, ''];
 
             case DOKU_LEXER_UNMATCHED :
-                $handler->_addCall('cdata', array($match), $pos);
+                $data = [$match];
+                $handler->_addCall('cdata', $data, $pos);
                 return false;
 
             case DOKU_LEXER_EXIT :
-                $data = array($state, $ID, $this->params);
-                $handler->addPluginCall($plugin, $data, $state,$pos,$match);
-                return false;
+                // hand over title tag parameters to render stage
+                return $data = [$state, $ID, $params];
         }
         return false;
     }
@@ -100,8 +85,10 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
      */
     function render($format, Doku_Renderer $renderer, $data) {
         global $ID;
+        static $doc, $capture; // store properties of $renderer
+        static $counter = [];
 
-        list($state, $id, $param) = $data;
+        list ($state, $id, $param) = $data;
 
         switch ($state) {
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
@@ -112,23 +99,22 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
             case DOKU_LEXER_ENTER :
                 // preserve variables
-                $this->doc     = $renderer->doc;
-                $this->capture = $renderer->capture;
+                $doc     = $renderer->doc;
+                $capture = $renderer->capture;
 
-                // set doc blank to store parsed "UNMATHCED" content
+                // set doc blank prior to store "UNMATHCED" content
                 $renderer->doc = '';
                 // metadata renderer should always parse "UNMATCHED" content
-                if ($format == 'metadata') $renderer->capture = true;
-
+                $renderer->capture = ($format == 'metadata') ? true : $capture;
                 return true;
                 break;
             case DOKU_LEXER_EXIT :
-                // retrieve parsed "UNMATCHED" content
+                // retrieve "UNMATCHED" content
                 $decorative_title = trim($renderer->doc);
 
-                // restore variable
-                $renderer->doc = $this->doc;
-                if ($format == 'metadata') $renderer->capture = $this->capture;
+                // restore variables
+                $renderer->doc     = $doc;
+                $renderer->capture = ($format == 'metadata') ? true : $capture;
                 break; // do not return here
             default:
                 return false; // this should never happen
@@ -138,17 +124,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
-        // assign a closure function to the class property
-        if ($this->renderedOnce === null) {
-            $this->renderedOnce = $this->counter->create_counter($item);
-        }
-
         // ensure first instruction only effective
-        //if (($this->renderedOnce)($format) > 0) return false; // since PHP 7
-        //if (call_user_func($this->renderedOnce, $format) > 0) return false; // PHP 7 & 5
-
-        $counter = $this->renderedOnce; // assign property to a local variable
-        if ($counter($format) > 0) return false;
+        if ($counter[$format]++ > 0) return false;
 
         // get plain title
         $title = trim(htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES));
@@ -156,6 +133,21 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
         // output title
         switch ($format) {
+            case 'metadata':
+                // set metadata for metadata indexer
+                $renderer->meta['plugin']['pagetitle'] = $ID;
+
+                if ($this->getConf('usePersistent')) {
+                    // metadata persistence
+                    $renderer->persistent['title'] = $title;
+                    $renderer->meta['title'] = $title;
+                } else {
+                    // erase persistent title metadata if defined
+                    unset($renderer->persistent['title']);
+                    $renderer->meta['title'] = $title;
+                }
+                return true;
+
             case 'xhtml':
                 if ($state == DOKU_LEXER_SPECIAL) return false;
                 if (($wrap = $this->loadHelper('wrap')) != NULL) {
@@ -172,21 +164,6 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
             case 'text':
                 $renderer->doc .= $title . DOKU_LF;
-                return true;
-
-            case 'metadata':
-                // set metadata for metadata indexer
-                $renderer->meta['plugin']['pagetitle'] = $ID;
-
-                if ($this->getConf('usePersistent')) {
-                    // metadata persistence
-                    $renderer->persistent['title'] = $title;
-                    $renderer->meta['title'] = $title;
-                } else {
-                    // erase persistent title metadata if defined
-                    unset($renderer->persistent['title']);
-                    $renderer->meta['title'] = $title;
-                }
                 return true;
         }
         return false;
