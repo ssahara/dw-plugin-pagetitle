@@ -19,19 +19,6 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
 
-    protected $mode;
-    protected $pattern = [];
-
-    function __construct() {
-        // syntax mode,  drop 'syntax_' from class name
-        $this->mode = substr(get_class($this), 7);
-
-        // syntax patterns
-        $this->pattern[1] = '<title\b[^\n>]*>(?=.*?</title>)'; // entry
-        $this->pattern[4] = '</title>';                        // exit
-        $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
-    }
-
     function getType() { return 'baseonly';}
     function getPType() { return 'block';}
     function getSort() { return 49; }
@@ -42,10 +29,23 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     /**
      * Connect pattern to lexer
      */
+    protected $mode, $pattern;
+
+    function preConnect() {
+        // syntax mode, drop 'syntax_' from class name
+        $this->mode = substr(get_class($this), 7);
+
+        // syntax patterns
+        $this->pattern[1] = '<title\b[^\n>]*>(?=.*?</title>)'; // entry
+        $this->pattern[4] = '</title>';                        // exit
+        $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
+    }
+
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
         $this->Lexer->addEntryPattern($this->pattern[1], $mode, $this->mode);
     }
+
     function postConnect() {
         $this->Lexer->addExitPattern($this->pattern[4], $this->mode);
     }
