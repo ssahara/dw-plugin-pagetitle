@@ -12,13 +12,13 @@ if (!defined('DOKU_INC')) die();
 class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
     function getType() { return 'substition'; }
-    function getPType(){ return 'block'; }
+    function getPType(){ return $PType; }
     function getSort() { return 990; }
 
     /**
      * Connect pattern to lexer
      */
-    protected $mode, $pattern;
+    protected $mode, $pattern, $PType = 'block';
 
     function preConnect() {
         // syntax mode, drop 'syntax_' from class name
@@ -30,6 +30,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
+        $this->Lexer->addSpecialPattern('<!-- ?YOU_ARE_HERE -inline?-->', $mode, $this->mode);
     }
 
     /**
@@ -48,6 +49,15 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
         list($state, $match, $id) = $data;
 
+        // change html-tag and PType when inline keyword is found
+        if(preg_match('/\-inline/', $match)) {
+           $html_tag = 'span';
+           $PType = 'normal';
+        }
+        else {
+            $html_tag = 'div';
+        }
+
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
@@ -55,9 +65,9 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
         if ($format == 'xhtml') {
             $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
-            $renderer->doc .= '<div class="youarehere">';
+            $renderer->doc .= '<'.$html_tag.' class="youarehere">';
             $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
-            $renderer->doc .= '</div>'.DOKU_LF;
+            $renderer->doc .= '</'.$html_tag.'>'.DOKU_LF;
         }
         return true;
     }
