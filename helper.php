@@ -53,7 +53,9 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
                 }
                 $name = p_get_metadata($id, 'shorttitle', METADATA_DONT_RENDER) ?: noNS($id0);
             }
-            $items[] = '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
+            if ($i < $depth-1 OR ($i == $depth-1 AND !preg_match('/.*:'.$conf['start'].'$/', $id))) {
+                $items[] = '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
+            }
         }
         // join items with a separator
         $out = implode(' ›&#x00A0;', $items);
