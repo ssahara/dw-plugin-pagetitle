@@ -12,7 +12,7 @@ if (!defined('DOKU_INC')) die();
 class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
     function getType() { return 'substition'; }
-    function getPType(){ return $PType; }
+    function getPType(){ return 'normal'; }
     function getSort() { return 990; }
 
     /**
@@ -49,10 +49,9 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
         list($state, $match, $id) = $data;
 
-        // change html-tag and PType when inline keyword is found
+        // change html-tag when inline keyword is found
         if(preg_match('/\-inline/', $match)) {
            $html_tag = 'span';
-           $PType = 'normal';
         }
         else {
             $html_tag = 'div';
@@ -64,10 +63,18 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $template = $this->loadHelper('pagetitle');
 
         if ($format == 'xhtml') {
+            // adds p block if inline option isn't set
+            if ($html_tag == 'div') {
+                $renderer->doc .= DOKU_LF.'</p>';
+            }
             $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
             $renderer->doc .= '<'.$html_tag.' class="youarehere">';
             $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
             $renderer->doc .= '</'.$html_tag.'>'.DOKU_LF;
+            // adds p block if inline option isn't set
+            if ($html_tag == 'div') {
+                $renderer->doc .= '<p>'.DOKU_LF;
+            }
         }
         return true;
     }
