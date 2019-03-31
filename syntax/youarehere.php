@@ -9,8 +9,8 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
-
+class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin
+{
     function getType() { return 'substition'; }
     function getPType(){ return 'block'; }
     function getSort() { return 990; }
@@ -20,7 +20,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
      */
     protected $mode, $pattern;
 
-    function preConnect() {
+    function preConnect()
+    {
         // syntax mode, drop 'syntax_' from class name
         $this->mode = substr(get_class($this), 7);
 
@@ -28,14 +29,16 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
         $this->pattern[5] = '<!-- ?YOU_ARE_HERE ?-->';
     }
 
-    function connectTo($mode) {
+    function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         global $ID;
         return array($state, $match, $ID);
     }
@@ -43,7 +46,8 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, Doku_Renderer $renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data)
+    {
         global $ID;
 
         list($state, $match, $id) = $data;
@@ -53,7 +57,10 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin {
 
         $template = $this->loadHelper('pagetitle');
 
-        if ($format == 'xhtml') {
+        if ($format == 'metadata') {
+            $renderer->meta['plugin']['pagetitle']['youarehere'] =+ 1;
+
+        } elseif ($format == 'xhtml') {
             $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
             $renderer->doc .= '<div class="youarehere">';
             $renderer->doc .= $template->html_youarehere(1); // start_depth = 1

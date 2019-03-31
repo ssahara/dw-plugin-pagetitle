@@ -122,6 +122,21 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin
         // we're only interested in wiki pages
         if (!isset($cache->page)) return;
 
+        // check dependency for hierarchical breadcrumbs
+        if ($cache->mode == 'xhtml') {
+            $metadata = p_get_metadata($cache->page, 'plugin pagetitle');
+            if (isset($metadata['youarehere'])) {
+                isset($helper) || $helper = $this->loadHelper('pagetitle');
+                $html = $helper->html_youarehere(1, $cache->page, $traces);
+                array_pop($traces);
+                $depends = [];
+                foreach ($traces as $id) {
+                    $depends[] = wikiFN($id, '', false);
+                }
+                $cache->depends['files'] = array_merge((array)$cache->depends['files'], $depends);
+            }
+        }
+
         // check metadata index whether pagetitle had used in the wiki page
         $pages = idx_get_indexer()->getPages('plugin_pagetitle');
         $pageTitled = in_array($cache->page, $pages);
