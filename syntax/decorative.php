@@ -29,7 +29,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
      */
     protected $mode, $pattern;
 
-    function preConnect()
+    public function preConnect()
     {
         // syntax mode, drop 'syntax_' from class name
         $this->mode = substr(get_class($this), 7);
@@ -40,13 +40,13 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
         $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
     }
 
-    function connectTo($mode)
+    public function connectTo($mode)
     {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
         $this->Lexer->addEntryPattern($this->pattern[1], $mode, $this->mode);
     }
 
-    function postConnect()
+    public function postConnect()
     {
         $this->Lexer->addExitPattern($this->pattern[4], $this->mode);
     }
@@ -55,7 +55,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler)
+    public function handle($match, $state, $pos, Doku_Handler $handler)
     {
         global $ID;
         static $params; // store title tag parameters
@@ -85,7 +85,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
     /**
      * Create output
      */
-    function render($format, Doku_Renderer $renderer, $data)
+    public function render($format, Doku_Renderer $renderer, $data)
     {
         global $ID;
         static $doc, $capture; // store properties of $renderer

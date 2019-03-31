@@ -17,7 +17,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($start_depth = 0, $print = true)
+    public function tpl_youarehere($start_depth = 0, $print = true)
     {
         global $lang;
 
@@ -29,7 +29,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function html_youarehere($start_depth = 0, $page = null, &$traces = [])
+    public function html_youarehere($start_depth = 0, $page = null, &$traces = [])
     {
         global $conf, $ID;
 
@@ -84,7 +84,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagelink($id = null, $name = null, $exists = null, $print = true)
+    public function tpl_pagelink($id = null, $name = null, $exists = null, $print = true)
     {
         global $conf;
 
@@ -95,7 +95,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function html_pagelink($id = null, $name = null, $exists = null)
+    private function html_pagelink($id = null, $name = null, $exists = null)
     {
         global $conf, $ID;
 
@@ -128,7 +128,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param string   $id  page id
      * @return string
      */
-    function wl($id = null)
+    private function wl($id = null)
     {
         global $conf;
 
@@ -162,7 +162,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagetitle($id = null, $print = true)
+    public function tpl_pagetitle($id = null, $print = true)
     {
         $out = $this->pagetitle($id);
         if ($print) {
@@ -171,7 +171,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function pagetitle($id = null)
+    private function pagetitle($id = null)
     {
         global $ACT, $ID, $conf, $lang;
 
