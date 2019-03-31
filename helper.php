@@ -8,8 +8,8 @@
 
 if (!defined('DOKU_INC')) die();
 
-class helper_plugin_pagetitle extends DokuWiki_Plugin {
-
+class helper_plugin_pagetitle extends DokuWiki_Plugin
+{
     /**
      * Hierarchical breadcrumbs for PageTitle plugin
      *
@@ -151,8 +151,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagetitle($id = null, $print = true) {
-
+    function tpl_pagetitle($id = null, $print = true)
+    {
         $out = $this->pagetitle($id);
         if ($print) {
             echo $out; return (bool) $out;
@@ -160,7 +160,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin {
         return $out;
     }
 
-    function pagetitle($id = null) {
+    function pagetitle($id = null)
+    {
         global $ACT, $ID, $conf, $lang;
 
         if (is_null($id)) {

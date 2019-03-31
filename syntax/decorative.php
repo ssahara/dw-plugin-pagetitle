@@ -17,21 +17,20 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
-
-    function getType() { return 'baseonly';}
-    function getPType() { return 'block';}
-    function getSort() { return 49; }
-    function getAllowedTypes() {
-        return array('formatting', 'substition', 'disabled');
-    }
+class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
+{
+    function getType()  { return 'baseonly'; }
+    function getPType() { return 'block'; }
+    function getSort()  { return 49; }
+    function getAllowedTypes() { return array('formatting', 'substition', 'disabled'); }
 
     /**
      * Connect pattern to lexer
      */
     protected $mode, $pattern;
 
-    function preConnect() {
+    function preConnect()
+    {
         // syntax mode, drop 'syntax_' from class name
         $this->mode = substr(get_class($this), 7);
 
@@ -41,12 +40,14 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         $this->pattern[5] = '~~Title:[^\n~]*~~';               // special
     }
 
-    function connectTo($mode) {
+    function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
         $this->Lexer->addEntryPattern($this->pattern[1], $mode, $this->mode);
     }
 
-    function postConnect() {
+    function postConnect()
+    {
         $this->Lexer->addExitPattern($this->pattern[4], $this->mode);
     }
 
@@ -54,7 +55,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         global $ID;
         static $params; // store title tag parameters
 
@@ -83,7 +85,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, Doku_Renderer $renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data)
+    {
         global $ID;
         static $doc, $capture; // store properties of $renderer
         static $counter = [];
@@ -135,7 +138,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin {
         switch ($format) {
             case 'metadata':
                 // set metadata for metadata indexer
-                $renderer->meta['plugin']['pagetitle'] = $ID;
+                $renderer->meta['plugin']['pagetitle']['title'] = $ID;
 
                 if ($this->getConf('usePersistent')) {
                     // metadata persistence
