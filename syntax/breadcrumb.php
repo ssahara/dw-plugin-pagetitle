@@ -9,8 +9,8 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
-
+class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
+{
     function getType() { return 'substition'; }
     function getPType(){ return 'normal'; }
     function getSort() { return 990; }
@@ -20,7 +20,8 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
      */
     protected $mode, $pattern;
 
-    function preConnect() {
+    public function preConnect()
+    {
         // syntax mode, drop 'syntax_' from class name
         $this->mode = substr(get_class($this), 7);
 
@@ -28,14 +29,16 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
         $this->pattern[5] = '~~ShortTitle:[^\n~]*~~';
     }
 
-    function connectTo($mode) {
+    public function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern($this->pattern[5], $mode, $this->mode);
     }
 
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         global $ID;
         static $counter = [];
 
@@ -50,7 +53,8 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($format, Doku_Renderer $renderer, $data) {
+    public function render($format, Doku_Renderer $renderer, $data)
+    {
         global $ID;
 
         list ($state, $short_title, $id) = $data;

@@ -17,7 +17,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_youarehere($start_depth = 0, $print = true) {
+    public function tpl_youarehere($start_depth = 0, $print = true)
+    {
         global $lang;
 
         $out = '<span class="bchead">'.$lang['youarehere'].'</span>';
@@ -28,11 +29,16 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function html_youarehere($start_depth = 0) {
+    public function html_youarehere($start_depth = 0, $page = null, &$traces = [])
+    {
         global $conf, $ID;
 
+        if (is_null($page)) {
+            $page = $ID;
+        }
+
         //prepend virtual root namespace to $ID that is not start page
-        $nodes = ($ID == $conf['start']) ? array('') : explode(':', ':'.$ID);
+        $nodes = ($page == $conf['start']) ? array('') : explode(':', ':'.$page);
         $depth = count($nodes);
         $items = array();
 
@@ -53,6 +59,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
                 }
                 $name = p_get_metadata($id, 'shorttitle', METADATA_DONT_RENDER) ?: noNS($id0);
             }
+            $traces[$i] = $id;
+
             if ($i < $depth-1 OR ($i == $depth-1 AND !preg_match('/.*:'.$conf['start'].'$/', $id))) {
                 $items[] = '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
             }
@@ -76,7 +84,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagelink($id = null, $name = null, $exists = null, $print = true) {
+    public function tpl_pagelink($id = null, $name = null, $exists = null, $print = true)
+    {
         global $conf;
 
         $out = $this->html_pagelink($id, $name, $exists);
@@ -86,7 +95,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function html_pagelink($id = null, $name = null, $exists = null) {
+    private function html_pagelink($id = null, $name = null, $exists = null)
+    {
         global $conf, $ID;
 
         if (is_null($id)) $id = $ID;
@@ -118,7 +128,8 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param string   $id  page id
      * @return string
      */
-    function wl($id = null) {
+    private function wl($id = null)
+    {
         global $conf;
 
         if (noNS($id) == $conf['start']) $id = ltrim(getNS($id).':', ':');
@@ -151,7 +162,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
      * @param bool   $print if false return content
      * @return bool|string html, or false if no data, true if printed
      */
-    function tpl_pagetitle($id = null, $print = true)
+    public function tpl_pagetitle($id = null, $print = true)
     {
         $out = $this->pagetitle($id);
         if ($print) {
@@ -160,7 +171,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    function pagetitle($id = null)
+    private function pagetitle($id = null)
     {
         global $ACT, $ID, $conf, $lang;
 
