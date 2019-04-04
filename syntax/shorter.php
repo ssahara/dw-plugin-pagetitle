@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki plugin PageTitle Breadcrumb; Syntax component
+ * DokuWiki plugin PageTitle Shorter; Syntax component
  * Macro to set the short title of the page in metadata
  *
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
@@ -43,7 +43,7 @@ class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
         static $counter = [];
 
         // ensure first matched pattern only effective
-        if ($counter[$id]++ > 0) return false;
+        if ($counter[$ID]++ > 0) return false;
 
         // get short title
         $short_title = trim(substr($match, 13, -2));
@@ -57,7 +57,7 @@ class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
     {
         global $ID;
 
-        list ($state, $short_title, $id) = $data;
+        [$state, $short_title, $id] = $data;
 
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
