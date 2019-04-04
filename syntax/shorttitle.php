@@ -9,7 +9,7 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
+class syntax_plugin_pagetitle_shorttitle extends DokuWiki_Syntax_Plugin
 {
     function getType() { return 'substition'; }
     function getPType(){ return 'normal'; }
@@ -26,7 +26,7 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
         $this->mode = substr(get_class($this), 7);
 
         //syntax patterns
-        $this->pattern[5] = '~~\$Breadcrumb\([^\n~]*\)~~';
+        $this->pattern[5] = '~~ShortTitle:[^\n~]*~~';
     }
 
     public function connectTo($mode)
@@ -39,8 +39,15 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        $id = trim(substr($match, 13, -3));
-        return $data = [$id];
+        global $ID;
+        static $counter = [];
+
+        // ensure first matched pattern only effective
+        if ($counter[$id]++ > 0) return false;
+
+        // get short title
+        $short_title = trim(substr($match, 13, -2));
+        return $data = [$state, $short_title, $ID];
     }
 
     /**
@@ -50,14 +57,14 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
     {
         global $ID;
 
-        $id = cleanID($data[0]) ?: $ID;
+        list ($state, $short_title, $id) = $data;
 
-        // load helper object
-        isset($helper) || $helper = $this->loadHelper($this->getPluginName());
+        // skip calls that belong to different pages (eg. title of included page)
+        if (strcmp($id, $ID) !== 0) return false;
 
         switch ($format) {
-            case 'xhtml':
-                $renderer->doc .= $helper->html_youarehere(1, $id);
+            case 'metadata':
+                $renderer->meta['shorttitle'] = $short_title;
                 return true;
             default:
                 return false;
