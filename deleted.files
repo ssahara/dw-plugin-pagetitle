@@ -11,3 +11,5 @@ syntax/metaonly.php
 # action.php is used again since 2017-08-27
 # Since 2018-07-24
 helper/
+# Since 2019-04-04
+syntax/breadcrumb.php

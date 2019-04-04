@@ -9,7 +9,7 @@
 
 if (!defined('DOKU_INC')) die();
 
-class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
+class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
 {
     function getType() { return 'substition'; }
     function getPType(){ return 'normal'; }
