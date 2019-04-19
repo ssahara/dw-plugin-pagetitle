@@ -19,15 +19,31 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
 {
-    function getType()  { return 'baseonly'; }
-    function getPType() { return 'block'; }
-    function getSort()  { return 49; }
-    function getAllowedTypes() { return array('formatting', 'substition', 'disabled'); }
+    public function getType()
+    {   // Syntax Type
+        return 'baseonly';
+    }
+
+    public function getPType()
+    {   // Paragraph Type
+        return 'block';
+    }
+
+    public function getAllowedTypes()
+    {   // Allowed Mode Types
+        return ['formatting', 'substition', 'disabled'];
+    }
 
     /**
-     * Connect pattern to lexer
+     * Connect pattern to lexer, implement Doku_Parser_Mode_Interface
      */
     protected $mode, $pattern;
+
+    public function getSort()
+    {
+        // sort number used to determine priority of this mode
+        return 49;
+    }
 
     public function preConnect()
     {

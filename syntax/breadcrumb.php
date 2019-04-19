@@ -11,14 +11,26 @@ if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
 {
-    function getType() { return 'substition'; }
-    function getPType(){ return 'normal'; }
-    function getSort() { return 990; }
+    public function getType()
+    {   // Syntax Type
+        return 'substition';
+    }
+
+    public function getPType()
+    {   // Paragraph Type
+        return 'normal';
+    }
 
     /**
-     * Connect pattern to lexer
+     * Connect pattern to lexer, implement Doku_Parser_Mode_Interface
      */
     protected $mode, $pattern;
+
+    public function getSort()
+    {
+        // sort number used to determine priority of this mode
+        return 990;
+    }
 
     public function preConnect()
     {
