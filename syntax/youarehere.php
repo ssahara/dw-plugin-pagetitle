@@ -49,21 +49,23 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin
     public function render($format, Doku_Renderer $renderer, $data)
     {
         global $ID;
+        static $helper;
 
         list($state, $match, $id) = $data;
 
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
-        $template = $this->loadHelper('pagetitle');
-
         if ($format == 'metadata') {
             $renderer->meta['plugin']['pagetitle']['youarehere'] =+ 1;
 
         } elseif ($format == 'xhtml') {
+            // load helper object
+            isset($helper) || $helper = $this->loadHelper($this->getPluginName());
+
             $renderer->doc .= DOKU_LF.$match.DOKU_LF; // html comment
             $renderer->doc .= '<div class="youarehere">';
-            $renderer->doc .= $template->html_youarehere(1); // start_depth = 1
+            $renderer->doc .= $helper->html_youarehere(1); // start_depth = 1
             $renderer->doc .= '</div>'.DOKU_LF;
         }
         return true;

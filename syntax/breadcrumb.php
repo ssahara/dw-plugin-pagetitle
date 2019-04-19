@@ -49,14 +49,15 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
     public function render($format, Doku_Renderer $renderer, $data)
     {
         global $ID;
+        static $helper;
 
         $id = cleanID($data[0]) ?: $ID;
 
-        // load helper object
-        isset($helper) || $helper = $this->loadHelper($this->getPluginName());
-
         switch ($format) {
             case 'xhtml':
+                // load helper object
+                isset($helper) || $helper = $this->loadHelper($this->getPluginName());
+
                 $renderer->doc .= $helper->html_youarehere(1, $id);
                 return true;
             default:
