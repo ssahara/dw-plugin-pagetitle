@@ -52,7 +52,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
         global $ID;
-        return array($state, $match, $ID);
+        return $data = [$state, $match, $ID];
     }
 
     /**

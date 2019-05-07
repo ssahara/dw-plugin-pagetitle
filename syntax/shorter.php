@@ -69,7 +69,7 @@ class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
     {
         global $ID;
 
-        [$state, $short_title, $id] = $data;
+        list($state, $short_title, $id) = $data;
 
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
