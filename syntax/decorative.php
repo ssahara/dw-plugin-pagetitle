@@ -87,8 +87,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
                 return $data = [$state, $ID, ''];
 
             case DOKU_LEXER_UNMATCHED :
-                $data = [$match];
-                $handler->_addCall('cdata', $data, $pos);
+                $handler->base($match, $state, $pos);
                 return false;
 
             case DOKU_LEXER_EXIT :
