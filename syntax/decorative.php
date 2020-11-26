@@ -165,7 +165,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
 
             case 'xhtml':
                 if ($state == DOKU_LEXER_SPECIAL) return false;
-                if (($wrap = $this->loadHelper('wrap')) != NULL) {
+                if ($param && ($wrap = $this->loadHelper('wrap')) !== null) {
                     $attr = $wrap->buildAttributes($param, 'pagetitle');
                 } else {
                     $attr = ' class="pagetitle"';
