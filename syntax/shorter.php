@@ -6,9 +6,6 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Satoshi Sahara <sahara.satoshi@gmail.com>
  */
-
-if (!defined('DOKU_INC')) die();
-
 class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
 {
     public function getType()

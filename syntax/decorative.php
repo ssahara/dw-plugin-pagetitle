@@ -14,9 +14,6 @@
  *        page (html):    <h1 class="pagetitle">H<sub>2</sub>O</h1>
  *        title metadata: H2O
  */
-
-if (!defined('DOKU_INC')) die();
-
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
 {
     public function getType()

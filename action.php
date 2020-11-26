@@ -5,9 +5,6 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Satoshi Sahara <sahara.satoshi@gmail.com>
  */
-
-if(!defined('DOKU_INC')) die();
-
 class action_plugin_pagetitle extends DokuWiki_Action_Plugin
 {
     /**
