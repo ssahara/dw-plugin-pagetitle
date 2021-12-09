@@ -16,36 +16,39 @@
  */
 class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
 {
+    /** syntax type */
     public function getType()
-    {   // Syntax Type
+    {
         return 'baseonly';
     }
 
+    /** paragraph type */
     public function getPType()
-    {   // Paragraph Type
+    {
         return 'block';
     }
 
+    /** allowed mode types */
     public function getAllowedTypes()
-    {   // Allowed Mode Types
+    {
         return ['formatting', 'substition', 'disabled'];
     }
 
     /**
-     * Connect pattern to lexer, implement Doku_Parser_Mode_Interface
+     * Connect pattern to lexer
      */
     protected $mode, $pattern;
 
+    /** sort number used to determine priority of this mode */
     public function getSort()
     {
-        // sort number used to determine priority of this mode
         return 49;
     }
 
     public function preConnect()
     {
         // syntax mode, drop 'syntax_' from class name
-        $this->mode = substr(get_class($this), 7);
+        $this->mode = substr(__CLASS__, 7);
 
         // syntax patterns
         $this->pattern[1] = '<title\b[^\n>]*>(?=.*?</title>)'; // entry

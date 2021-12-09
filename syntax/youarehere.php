@@ -8,31 +8,33 @@
  */
 class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin
 {
+    /** syntax type */
     public function getType()
-    {   // Syntax Type
+    {
         return 'substition';
     }
 
+    /** paragraph type */
     public function getPType()
-    {   // Paragraph Type
+    {
         return 'block';
     }
 
     /**
-     * Connect pattern to lexer, implement Doku_Parser_Mode_Interface
+     * Connect pattern to lexer
      */
     protected $mode, $pattern;
 
+    /** sort number used to determine priority of this mode */
     public function getSort()
     {
-        // sort number used to determine priority of this mode
         return 990;
     }
 
     public function preConnect()
     {
         // syntax mode, drop 'syntax_' from class name
-        $this->mode = substr(get_class($this), 7);
+        $this->mode = substr(__CLASS__, 7);
 
         //syntax patterns
         $this->pattern[5] = '<!-- ?YOU_ARE_HERE ?-->';

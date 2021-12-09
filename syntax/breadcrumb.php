@@ -8,13 +8,15 @@
  */
 class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
 {
+    /** syntax type */
     public function getType()
-    {   // Syntax Type
+    {
         return 'substition';
     }
 
+    /** paragraph type */
     public function getPType()
-    {   // Paragraph Type
+    {
         return 'normal';
     }
 
@@ -23,16 +25,16 @@ class syntax_plugin_pagetitle_breadcrumb extends DokuWiki_Syntax_Plugin
      */
     protected $mode, $pattern;
 
+    /** sort number used to determine priority of this mode */
     public function getSort()
     {
-        // sort number used to determine priority of this mode
         return 990;
     }
 
     public function preConnect()
     {
         // syntax mode, drop 'syntax_' from class name
-        $this->mode = substr(get_class($this), 7);
+        $this->mode = substr(__CLASS__, 7);
 
         //syntax patterns
         $this->pattern[5] = '~~\$Breadcrumb\([^\n~]*\)~~';
