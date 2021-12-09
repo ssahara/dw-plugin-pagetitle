@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\Search\Indexer;
+
 /**
  * DokuWiki Plugin PageTitle; Action component
  *
@@ -89,7 +92,7 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin
         $persistent =& $event->data['persistent'];
 
         // check metadata index whether pagetitle had used in the wiki page
-        $pages = idx_get_indexer()->getPages('plugin_pagetitle');
+        $pages = $this->getIndexer()->getPages('plugin_pagetitle');
         $pageTitled = in_array($ID, $pages);
 
         if (!$pageTitled) return;
@@ -135,7 +138,7 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin
         }
 
         // check metadata index whether pagetitle had used in the wiki page
-        $pages = idx_get_indexer()->getPages('plugin_pagetitle');
+        $pages = $this->getIndexer()->getPages('plugin_pagetitle');
         $pageTitled = in_array($cache->page, $pages);
 
         if (!$pageTitled) return;
@@ -144,17 +147,25 @@ class action_plugin_pagetitle extends DokuWiki_Action_Plugin
         $title = p_get_metadata($cache->page, 'title', METADATA_DONT_RENDER);
         switch ($cache->mode) {
             case 'i': // instruction cache
-                $request = ($title == $cache->page) ? true : false;
+                $request = ($title == $cache->page);
                 break;
             case 'metadata': // metadata cache?
-                $request = ($title == $cache->page) ? true : false;
+                $request = ($title == $cache->page);
                 break;
             case 'xhtml': // xhtml cache
-                $request = ($title == $cache->page) ? true : false;
+                $request = ($title == $cache->page);
                 break;
         }
         // request purge if necessary
         $cache->depends['purge'] = $request;
+    }
+
+    // compatibility
+    private function getIndexer()
+    {
+        return is_callable([Indexer::class, 'getInstance'])
+            ? Indexer::getInstance()
+            : idx_get_indexer();
     }
 
 }
