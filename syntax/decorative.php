@@ -143,6 +143,7 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
         if (strcmp($id, $ID) !== 0) return false;
 
         // ensure first instruction only effective
+        if (!isset($counter[$format])) $counter[$format] = 0;
         if ($counter[$format]++ > 0) return false;
 
         // get plain title
