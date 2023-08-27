@@ -26,41 +26,33 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
         return $out;
     }
 
-    public function html_youarehere($start_depth = 0, $page = null, &$traces = [])
+    public function html_youarehere($start_depth = 0, $id = null)
     {
         global $conf, $ID;
 
-        if (is_null($page)) {
-            $page = $ID;
-        }
+        if (is_null($id)) $page = $ID;
 
-        //prepend virtual root namespace to $ID that is not start page
-        $nodes = ($page == $conf['start']) ? array('') : explode(':', ':'.$page);
-        $depth = count($nodes);
-        $items = array();
+        // prepend virtual root namespace to id that is not start page
+        // tiers[0] becomes array(0 => '') for virtual root
+        $id = ($id == $conf['start']) ? '' : ':'.ltrim($id, ':');
+        $tiers = explode(':', $id);
+        $depth = count($tiers);
+        $items = [];
 
         for ($i = $start_depth; $i < $depth; $i++) {
-            $id = $id0 = implode(':', array_slice($nodes, 0, $i+1));
-
-            if (empty($id)) {                       // root start page
-                $id = $conf['start'];
-            } elseif ($id == ':'.$conf['start']) {  // start namespace
-                $id = $conf['start'].':'.$conf['start'];
-                resolve_pageid('', $id, $exists);
-                $name = $conf['start'];
+            if ($i == 0 && $tiers[$i] == '') {
+                $p = $p0 = $conf['start'];
             } else {
-                resolve_pageid('', $id, $exists);
-                if (!$exists) {
-                    $id = $id.':';
-                    resolve_pageid('', $id, $exists);
-                }
-                $name = p_get_metadata($id, 'shorttitle', METADATA_DONT_RENDER) ?: noNS($id0);
+                $p = $p0 = implode(':', array_slice($tiers, 1, $i));
             }
-            $traces[$i] = $id;
+            // looks startpage of the name space when page not exists
+            if (!page_exists($p) && page_exists($p.':'.$conf['start'])) {
+                $p = $p.':'.$conf['start'];
+            }
 
-            if ($i < $depth-1 OR ($i == $depth-1 AND !preg_match('/.*:'.$conf['start'].'$/', $id))) {
-                $items[] = '<bdi>'.$this->html_pagelink($id, $name, $exists).'</bdi>';
-            }
+            // get short title of the page
+            $name = p_get_metadata($p, 'shorttitle', METADATA_DONT_RENDER) ?: noNS($p0);
+            $items[$i] = '<bdi>'.$this->html_pagelink($p, $name, page_exists($p)).'</bdi>';
         }
         // join items with a separator
         $out = implode(' ›&#x00A0;', $items);
