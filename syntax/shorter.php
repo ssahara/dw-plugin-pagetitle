@@ -54,6 +54,7 @@ class syntax_plugin_pagetitle_shorter extends DokuWiki_Syntax_Plugin
         static $counter = [];
 
         // ensure first matched pattern only effective
+        if (!isset($counter[$ID])) $counter[$ID] = 0;
         if ($counter[$ID]++ > 0) return false;
 
         // get short title
