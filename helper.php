@@ -30,7 +30,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
     {
         global $conf, $ID;
 
-        if (is_null($id)) $id = $ID;
+        if (!isset($id)) $id = $ID;
 
         // prepend virtual root namespace to id that is not start page
         // tiers[0] becomes array(0 => '') for virtual root
@@ -88,15 +88,15 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
     {
         global $conf, $ID;
 
-        if (is_null($id)) $id = $ID;
+        if (!isset($id)) $id = $ID;
 
         $title = p_get_metadata($id, 'title');
         if (empty($title)) $title = $id;
 
-        if (is_null($exists)) {
-            $class = (page_exists($id)) ? 'wikilink1' : 'wikilink2';
-        } else {
+        if (isset($exists)) {
             $class = ($exists) ? 'wikilink1' : 'wikilink2';
+        } else {
+            $class = (page_exists($id)) ? 'wikilink1' : 'wikilink2';
         }
 
         $short_title = $name;
@@ -164,10 +164,10 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
     {
         global $ACT, $ID, $conf, $lang;
 
-        if (is_null($id)) {
-            $title = (p_get_metadata($ID, 'title')) ?: $ID;
-        } else {
+        if (isset($id)) {
             $title = (p_get_metadata($id, 'title')) ?: $id;
+        } else {
+            $title = (p_get_metadata($ID, 'title')) ?: $ID;
         }
 
         // default page title is the page name, modify with the current action
