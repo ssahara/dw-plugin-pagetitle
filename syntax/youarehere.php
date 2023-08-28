@@ -65,7 +65,7 @@ class syntax_plugin_pagetitle_youarehere extends DokuWiki_Syntax_Plugin
         list($state, $match, $id) = $data;
 
         // skip calls that belong to different pages (eg. title of included page)
-        if (strcmp($id, $ID) !== 0) return false;
+        if ($id !== $ID) return false;
 
         if ($format == 'metadata') {
             $renderer->meta['plugin']['pagetitle']['youarehere'] =+ 1;
