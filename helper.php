@@ -30,7 +30,7 @@ class helper_plugin_pagetitle extends DokuWiki_Plugin
     {
         global $conf, $ID;
 
-        if (is_null($id)) $page = $ID;
+        if (is_null($id)) $id = $ID;
 
         // prepend virtual root namespace to id that is not start page
         // tiers[0] becomes array(0 => '') for virtual root
