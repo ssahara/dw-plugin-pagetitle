@@ -97,54 +97,53 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
         return false;
     }
 
+    /** @var string temporary $doc store used in render() */
+    protected $store = '';
+
     /**
      * Create output
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
         global $ID;
-        static $doc, $capture; // store properties of $renderer
         static $counter = [];
 
         list ($state, $id, $param) = $data;
 
         switch ($state) {
+            case DOKU_LEXER_ENTER :
+                // disable capturing
+                if ($renderer->getFormat() == 'metadata') $renderer->capturing = false;
+                // preserve rendered data
+                $this->store = $renderer->doc;
+                // set doc blank prior to store "UNMATHCED" content
+                $renderer->doc = '';
+                return true;
+                break;
+            case DOKU_LEXER_EXIT :
+                // re-enable capturing
+                if ($renderer->getFormat() == 'metadata') $renderer->capturing = true;
+                // retrieve "UNMATCHED" content
+                $decorative_title = trim($renderer->doc);
+                // restore rendered data
+                $renderer->doc = $this->store;
+                $this->store = '';
+                break; // do not return here
+
             case DOKU_LEXER_SPECIAL : // ~~Title:*~~ macro syntax
                 // $decorative_title = $param;
                 // convert to curly quote characters depending on $conf['typography']
                 $decorative_title = $this->render_text($param);
                 break;
-
-            case DOKU_LEXER_ENTER :
-                // preserve variables
-                $doc     = $renderer->doc;
-                $capture = $renderer->capture;
-
-                // set doc blank prior to store "UNMATHCED" content
-                $renderer->doc = '';
-                // metadata renderer should always parse "UNMATCHED" content
-                $renderer->capture = ($format == 'metadata') ? true : $capture;
-                return true;
-                break;
-            case DOKU_LEXER_EXIT :
-                // retrieve "UNMATCHED" content
-                $decorative_title = trim($renderer->doc);
-
-                // restore variables
-                $renderer->doc     = $doc;
-                $renderer->capture = ($format == 'metadata') ? true : $capture;
-                break; // do not return here
-            default:
-                return false; // this should never happen
         }
-        // follow up only for DOKU_LEXER_EXIT
+        // follow up only for DOKU_LEXER_EXIT and DOKU_LEXER_SPECIAL
 
         // skip calls that belong to different pages (eg. title of included page)
         if (strcmp($id, $ID) !== 0) return false;
 
         // ensure first instruction only effective
-        if (!isset($counter[$format])) $counter[$format] = 0;
-        if ($counter[$format]++ > 0) return false;
+        if (!isset($counter[$ID][$format])) $counter[$ID][$format] = 0;
+        if ($counter[$ID][$format]++ > 0) return false;
 
         // get plain title
         $title = trim(htmlspecialchars_decode(strip_tags($decorative_title), ENT_QUOTES));
@@ -153,6 +152,8 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
         // output title
         switch ($format) {
             case 'metadata':
+                $renderer->cdata(DOKU_LF. $title .DOKU_LF);
+
                 // set metadata for metadata indexer
                 $renderer->meta['plugin']['pagetitle']['title'] = $ID;
 
@@ -176,13 +177,12 @@ class syntax_plugin_pagetitle_decorative extends DokuWiki_Syntax_Plugin
                 }
 
                 // even title in <h1>, it never shown up in the table of contents (TOC)
-                $renderer->doc .= '<h1'.$attr.'>';
-                $renderer->doc .= $decorative_title;
-                $renderer->doc .= '</h1>'.DOKU_LF;
+                $renderer->doc .= DOKU_LF;
+                $renderer->doc .= '<h1'.$attr.'>'.$decorative_title.'</h1>'.DOKU_LF;
                 return true;
 
             case 'text':
-                $renderer->doc .= $title . DOKU_LF;
+                $renderer->doc .= DOKU_LF. $title .DOKU_LF;
                 return true;
         }
         return false;
